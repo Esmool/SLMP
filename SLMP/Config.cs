@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SLMP
+﻿namespace SLMP
 {
     /// <summary>
     /// This class is intended to be passed to the `Client` class.
