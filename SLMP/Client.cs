@@ -26,7 +26,7 @@ namespace SLMP
 
         public void Connect(string addr)
         {
-            var result = client.ConnectAsync(addr, config.port).Wait(config.conn_timeout);
+            bool result = client.ConnectAsync(addr, config.port).Wait(config.conn_timeout);
             if (!result)
                 throw new Exception("Connection error");
 
@@ -40,8 +40,8 @@ namespace SLMP
         public List<UInt16> ReadWordDevice(Device device, UInt16 addr, UInt16 count)
         {
             SendReadDevice(device, addr, count);
-            var response = RecvResponse();
-            var result = new List<UInt16>();
+            List<byte> response = RecvResponse();
+            List<ushort> result = new();
 
             response
                 .Chunk(2)
@@ -150,10 +150,9 @@ namespace SLMP
             }
 
             int dataSize = hdr_buf[^1] << 8 | hdr_buf[^2];
-            List<byte> response_buffer = new();
-            response_buffer.AddRange(RecvBytes(dataSize));
-            int endCode = response_buffer[1] << 8 | response_buffer[0];
+            List<byte> response_buffer = RecvBytes(dataSize).ToList();
 
+            int endCode = response_buffer[1] << 8 | response_buffer[0];
             if (endCode != 0)
                 throw new Exception($"non-zero end code: {endCode:X}H");
 
