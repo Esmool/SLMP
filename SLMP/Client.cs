@@ -233,7 +233,6 @@ namespace SLMP
             rawRequest.AddRange(new List<byte>(){
                 // request data length (in terms of bytes): (12 + data.Length)
                 (byte)(len & 0xff), (byte)(len >> 0x8),
-                0x0c, 0x00,
                 // monitoring timer. TODO: make this something configurable instead of hard-coding it.
                 0x00, 0x10,
                 (byte)(cmd & 0xff), (byte)(cmd >> 0x8),
