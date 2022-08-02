@@ -77,7 +77,7 @@ namespace SLMP
 
         }
 
-        public void WriteBitDevice(Device device, UInt16 addr, bool[] data)
+        public void WriteDevice(Device device, UInt16 addr, bool[] data)
         {
             UInt16 count = (UInt16)data.Length;
             List<bool> listData = data.ToList();
@@ -96,7 +96,7 @@ namespace SLMP
             ReceiveResponse();
         }
 
-        public void WriteWordDevice(Device device, UInt16 addr, UInt16[] data)
+        public void WriteDevice(Device device, UInt16 addr, UInt16[] data)
         {
             UInt16 count = (UInt16)data.Length;
             List<byte> encodedData = new();
