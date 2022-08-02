@@ -77,6 +77,38 @@ namespace SLMP
 
         }
 
+        public void WriteBitDevice(Device device, UInt16 addr, bool[] data)
+        {
+            UInt16 count = (UInt16)data.Length;
+            List<bool> listData = data.ToList();
+            List<byte> encodedData = new();
+
+            if (count % 2 != 0)
+                listData.Add(false);
+
+            listData
+                .Chunk(2)
+                .ToList()
+                .ForEach(a => encodedData.Add(
+                    (byte)(Convert.ToByte(a[0]) << 4 | Convert.ToByte(a[1]))));
+
+            SendWriteDeviceCommand(device, addr, count, encodedData.ToArray());
+        }
+
+        public void WriteWordDevice(Device device, UInt16 addr, UInt16[] data)
+        {
+            UInt16 count = (UInt16)data.Length;
+            List<byte> encodedData = new();
+
+            foreach (UInt16 word in data)
+            {
+                encodedData.Add((byte)(word & 0xff));
+                encodedData.Add((byte)(word >> 0x8));
+            }
+
+            SendWriteDeviceCommand(device, addr, count, encodedData.ToArray());
+        }
+
         /// <summary>
         /// Gets the subcommand.
         /// </summary>
@@ -117,42 +149,12 @@ namespace SLMP
             return buffer;
         }
 
-        /// <summary>
-        /// Sends the read device command.
-        /// </summary>
-        private void SendReadDeviceCommand(Device device, UInt16 adr, UInt16 cnt)
-        {
-            if (stream == null)
-                throw new Exception("connection isn't established");
-
-            List<byte> rawRequest = HEADER.ToList();
-
-            UInt16 cmd = (UInt16)Command.DeviceRead;
-            UInt16 sub = GetSubcommand(DeviceExt.GetDeviceType(device));
-
-            rawRequest.AddRange(new List<byte>(){
-                // request data length (in terms of bytes): fixed size (12) for the read command
-                0x0c, 0x00,
-                // monitoring timer. TODO: make this something configurable instead of hard-coding it.
-                0x00, 0x10,
-                (byte)(cmd & 0xff), (byte)(cmd >> 0x8),
-                (byte)(sub & 0xff), (byte)(sub >> 0x8),
-                (byte)(adr & 0xff), (byte)(adr >> 0x8),
-                (byte)(0x00),
-                (byte)device,
-                (byte)(cnt & 0xff), (byte)(cnt >> 0x8),
-            });
-
-
-            stream.Write(rawRequest.ToArray());
-        }
-
         private List<byte> ReceiveResponse()
         {
             if (stream == null)
                 throw new Exception("connection isn't established");
 
-            // read a single byte to determine 
+            // read a single byte to determine
             // if a serial no. is included or not
             int value = stream.ReadByte();
             byte[] hdrBuf;
@@ -183,6 +185,65 @@ namespace SLMP
 
             responseBuffer.RemoveRange(0, 2);
             return responseBuffer;
+        }
+
+        /// <summary>
+        /// Sends the read device command.
+        /// </summary>
+        private void SendReadDeviceCommand(Device device, UInt16 adr, UInt16 cnt)
+        {
+            if (stream == null)
+                throw new Exception("connection isn't established");
+
+            List<byte> rawRequest = HEADER.ToList();
+
+            UInt16 cmd = (UInt16)Command.DeviceRead;
+            UInt16 sub = GetSubcommand(DeviceExt.GetDeviceType(device));
+
+            rawRequest.AddRange(new List<byte>(){
+                // request data length (in terms of bytes): fixed size (12) for the read command
+                0x0c, 0x00,
+                // monitoring timer. TODO: make this something configurable instead of hard-coding it.
+                0x00, 0x10,
+                (byte)(cmd & 0xff), (byte)(cmd >> 0x8),
+                (byte)(sub & 0xff), (byte)(sub >> 0x8),
+                (byte)(adr & 0xff), (byte)(adr >> 0x8),
+                (byte)(0x00),
+                (byte)device,
+                (byte)(cnt & 0xff), (byte)(cnt >> 0x8),
+            });
+
+
+            stream.Write(rawRequest.ToArray());
+        }
+
+        private void SendWriteDeviceCommand(Device device, UInt16 adr, UInt16 cnt, byte[] data)
+        {
+            if (stream == null)
+                throw new Exception("connection isn't established");
+
+            List<byte> rawRequest = HEADER.ToList();
+
+            UInt16 cmd = (UInt16)Command.DeviceRead;
+            UInt16 sub = GetSubcommand(DeviceExt.GetDeviceType(device));
+            UInt16 len = (UInt16)(data.Length + 0x000c);
+
+            rawRequest.AddRange(new List<byte>(){
+                // request data length (in terms of bytes): (12 + data.Length)
+                (byte)(len & 0xff), (byte)(len >> 0x8),
+                0x0c, 0x00,
+                // monitoring timer. TODO: make this something configurable instead of hard-coding it.
+                0x00, 0x10,
+                (byte)(cmd & 0xff), (byte)(cmd >> 0x8),
+                (byte)(sub & 0xff), (byte)(sub >> 0x8),
+                (byte)(adr & 0xff), (byte)(adr >> 0x8),
+                (byte)(0x00),
+                (byte)device,
+                (byte)(cnt & 0xff), (byte)(cnt >> 0x8),
+            });
+            rawRequest.AddRange(data);
+
+            stream.Write(rawRequest.ToArray());
         }
     }
 }
