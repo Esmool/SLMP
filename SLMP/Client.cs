@@ -39,11 +39,25 @@ namespace SLMP
             stream = client.GetStream();
         }
 
+        public List<bool> ReadBitDevice(Device device, UInt16 addr, UInt16 count)
+        {
+            SendReadDeviceCommand(device, addr, count);
+            List<byte> response = ReceiveResponse();
+            List<bool> result = new();
+
+            response.ForEach(delegate(byte a) {
+                result.Add((a & 0x10) != 0);
+                result.Add((a & 0x01) != 0);
+            });
+
+            return result.GetRange(0, count);
+        }
+
         public List<UInt16> ReadWordDevice(Device device, UInt16 addr, UInt16 count)
         {
             SendReadDeviceCommand(device, addr, count);
             List<byte> response = ReceiveResponse();
-            List<ushort> result = new();
+            List<UInt16> result = new();
 
             // if the length of the response isn't even
             // then the response is invalid and we can't
