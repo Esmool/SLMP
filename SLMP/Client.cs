@@ -93,6 +93,7 @@ namespace SLMP
                     (byte)(Convert.ToByte(a[0]) << 4 | Convert.ToByte(a[1]))));
 
             SendWriteDeviceCommand(device, addr, count, encodedData.ToArray());
+            ReceiveResponse();
         }
 
         public void WriteWordDevice(Device device, UInt16 addr, UInt16[] data)
@@ -107,6 +108,7 @@ namespace SLMP
             }
 
             SendWriteDeviceCommand(device, addr, count, encodedData.ToArray());
+            ReceiveResponse();
         }
 
         /// <summary>
@@ -224,7 +226,7 @@ namespace SLMP
 
             List<byte> rawRequest = HEADER.ToList();
 
-            UInt16 cmd = (UInt16)Command.DeviceRead;
+            UInt16 cmd = (UInt16)Command.DeviceWrite;
             UInt16 sub = GetSubcommand(DeviceExt.GetDeviceType(device));
             UInt16 len = (UInt16)(data.Length + 0x000c);
 
