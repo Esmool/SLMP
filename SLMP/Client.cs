@@ -102,22 +102,24 @@ namespace SLMP
             if (stream == null)
                 throw new Exception("connection isn't established");
 
-            var raw_data = HEADER.ToList();
-
-            // request data length (in terms of bytes): fixed size (12) for the read command
-            raw_data.Add(0x0c); raw_data.Add(0x00);
-            // monitoring timer. TODO: make this something configurable instead of hard-coding it.
-            raw_data.Add(0x00); raw_data.Add(0x10);
+            List<byte> raw_data = HEADER.ToList();
 
             UInt16 cmd = (UInt16)Command.DeviceRead;
             UInt16 sub = GetSubcommand(DeviceExt.GetDeviceType(device));
 
-            raw_data.Add((byte)(cmd & 0xff)); raw_data.Add((byte)(cmd >> 0x8));
-            raw_data.Add((byte)(sub & 0xff)); raw_data.Add((byte)(sub >> 0x8));
-            raw_data.Add((byte)(adr & 0xff)); raw_data.Add((byte)(adr >> 0x8));
-            raw_data.Add(0x00);
-            raw_data.Add((byte)device);
-            raw_data.Add((byte)(cnt & 0xff)); raw_data.Add((byte)(cnt >> 0x8));
+            raw_data.AddRange(new List<byte>(){
+                // request data length (in terms of bytes): fixed size (12) for the read command
+                0x0c, 0x00,
+                // monitoring timer. TODO: make this something configurable instead of hard-coding it.
+                0x00, 0x10,
+                (byte)(cmd & 0xff), (byte)(cmd >> 0x8),
+                (byte)(sub & 0xff), (byte)(sub >> 0x8),
+                (byte)(adr & 0xff), (byte)(adr >> 0x8),
+                (byte)(0x00),
+                (byte)device,
+                (byte)(cnt & 0xff), (byte)(cnt >> 0x8),
+            });
+
 
             stream.Write(raw_data.ToArray());
         }
