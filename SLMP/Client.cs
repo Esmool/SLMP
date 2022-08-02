@@ -60,7 +60,7 @@ namespace SLMP
         /// <exception cref="System.ArgumentException">invalid device type provided</exception>
         private UInt16 GetSubcommand(DeviceType type)
         {
-            switch(type)
+            switch (type)
             {
                 case DeviceType.Bit:
                     return 0x0001;
@@ -105,7 +105,7 @@ namespace SLMP
             var raw_data = HEADER.ToList();
 
             // request data length (in terms of bytes): fixed size (12) for the read command
-            raw_data.Add(0x0c); raw_data.Add(0x00); 
+            raw_data.Add(0x0c); raw_data.Add(0x00);
             // monitoring timer. TODO: make this something configurable instead of hard-coding it.
             raw_data.Add(0x00); raw_data.Add(0x10);
 
