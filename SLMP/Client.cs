@@ -202,7 +202,7 @@ namespace SLMP
             UInt16 cmd = (UInt16)Command.DeviceRead;
             UInt16 sub = GetSubcommand(DeviceExt.GetDeviceType(device));
 
-            rawRequest.AddRange(new List<byte>(){
+            rawRequest.AddRange(new byte[]{
                 // request data length (in terms of bytes): fixed size (12) for the read command
                 0x0c, 0x00,
                 // monitoring timer. TODO: make this something configurable instead of hard-coding it.
@@ -230,7 +230,7 @@ namespace SLMP
             UInt16 sub = GetSubcommand(DeviceExt.GetDeviceType(device));
             UInt16 len = (UInt16)(data.Length + 0x000c);
 
-            rawRequest.AddRange(new List<byte>(){
+            rawRequest.AddRange(new byte[]{
                 // request data length (in terms of bytes): (12 + data.Length)
                 (byte)(len & 0xff), (byte)(len >> 0x8),
                 // monitoring timer. TODO: make this something configurable instead of hard-coding it.
