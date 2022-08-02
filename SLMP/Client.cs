@@ -4,8 +4,10 @@ namespace SLMP
 {
     public class Client
     {
-        /// <summary>This `HEADER` array contains the shared (header) data between
-        /// commands that are supported in this library.</summary>
+        /// <summary>
+        /// This `HEADER` array contains the shared (header) data between
+        /// commands that are supported in this library.
+        /// </summary>
         private readonly byte[] HEADER = {
             0x50, 0x00,     // subheader: no serial no.
             0x00,           // request destination network no.
@@ -39,10 +41,19 @@ namespace SLMP
 
         public List<UInt16> ReadWordDevice(Device device, UInt16 addr, UInt16 count)
         {
-            SendReadDevice(device, addr, count);
-            List<byte> response = RecvResponse();
+            SendReadDeviceCommand(device, addr, count);
+            List<byte> response = ReceiveResponse();
             List<ushort> result = new();
 
+            // if the length of the response isn't even
+            // then the response is invalid and we can't
+            // construct an array of `UInt16`s from it
+            if (response.Count() % 2 != 0)
+                throw new Exception("invalid response");
+
+            // word data is received in little endian format
+            // which means the lower byte of a word comes first
+            // and upper byte second
             response
                 .Chunk(2)
                 .ToList()
@@ -55,8 +66,6 @@ namespace SLMP
         /// <summary>
         /// Gets the subcommand.
         /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns></returns>
         /// <exception cref="System.ArgumentException">invalid device type provided</exception>
         private UInt16 GetSubcommand(DeviceType type)
         {
@@ -71,7 +80,11 @@ namespace SLMP
             }
         }
 
-        private byte[] RecvBytes(int count)
+        /// <summary>
+        /// This function exists because `NetworkStream` doesn't
+        /// have a `recv_exact` method.
+        /// </summary>
+        private byte[] ReceiveBytes(int count)
         {
             if (stream == null)
                 throw new Exception("connection isn't established");
@@ -93,21 +106,17 @@ namespace SLMP
         /// <summary>
         /// Sends the read device command.
         /// </summary>
-        /// <param name="device">The device.</param>
-        /// <param name="adr">The adr.</param>
-        /// <param name="cnt">The count.</param>
-        /// <exception cref="System.Exception">connection isn't established</exception>
-        private void SendReadDevice(Device device, UInt16 adr, UInt16 cnt)
+        private void SendReadDeviceCommand(Device device, UInt16 adr, UInt16 cnt)
         {
             if (stream == null)
                 throw new Exception("connection isn't established");
 
-            List<byte> raw_data = HEADER.ToList();
+            List<byte> rawRequest = HEADER.ToList();
 
             UInt16 cmd = (UInt16)Command.DeviceRead;
             UInt16 sub = GetSubcommand(DeviceExt.GetDeviceType(device));
 
-            raw_data.AddRange(new List<byte>(){
+            rawRequest.AddRange(new List<byte>(){
                 // request data length (in terms of bytes): fixed size (12) for the read command
                 0x0c, 0x00,
                 // monitoring timer. TODO: make this something configurable instead of hard-coding it.
@@ -121,29 +130,29 @@ namespace SLMP
             });
 
 
-            stream.Write(raw_data.ToArray());
+            stream.Write(rawRequest.ToArray());
         }
 
-        private List<byte> RecvResponse()
+        private List<byte> ReceiveResponse()
         {
             if (stream == null)
                 throw new Exception("connection isn't established");
 
             // read a single byte to determine 
             // if a serial no. is included or not
-            var value = stream.ReadByte();
-            byte[] hdr_buf;
+            int value = stream.ReadByte();
+            byte[] hdrBuf;
             switch (value)
             {
                 // if value is 0xd0, there's no serial no. included
                 // in the response
                 case 0xd0:
-                    hdr_buf = RecvBytes(8);
+                    hdrBuf = ReceiveBytes(8);
                     break;
                 // if value is 0xd4, there's a serial no. included
                 // in the response
                 case 0xd4:
-                    hdr_buf = RecvBytes(12);
+                    hdrBuf = ReceiveBytes(12);
                     break;
                 // in the case where we receive some other data, we mark it
                 // as invalid and throw an `Exception`
@@ -151,15 +160,15 @@ namespace SLMP
                     throw new Exception($"invalid start byte received: {value}");
             }
 
-            int dataSize = hdr_buf[^1] << 8 | hdr_buf[^2];
-            List<byte> response_buffer = RecvBytes(dataSize).ToList();
+            int dataSize = hdrBuf[^1] << 8 | hdrBuf[^2];
+            List<byte> responseBuffer = ReceiveBytes(dataSize).ToList();
 
-            int endCode = response_buffer[1] << 8 | response_buffer[0];
+            int endCode = responseBuffer[1] << 8 | responseBuffer[0];
             if (endCode != 0)
                 throw new Exception($"non-zero end code: {endCode:X}H");
 
-            response_buffer.RemoveRange(0, 2);
-            return response_buffer;
+            responseBuffer.RemoveRange(0, 2);
+            return responseBuffer;
         }
     }
 }
