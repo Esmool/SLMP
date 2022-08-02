@@ -28,13 +28,20 @@ namespace SLMP
 
         public void Connect(string addr)
         {
-            bool result = client.ConnectAsync(addr, config.port).Wait(config.conn_timeout);
-            if (!result)
-                throw new Exception("Connection error");
+            switch (config.connTimeout)
+            {
+                case null:
+                    client.Connect(addr, config.port);
+                    break;
+                default:
+                    if (!client.ConnectAsync(addr, config.port).Wait((int)config.connTimeout))
+                        throw new TimeoutException("connection timed out");
+                    break;
+            }
 
             // connection is successful
-            client.SendTimeout = config.send_timeout;
-            client.ReceiveTimeout = config.recv_timeout;
+            if (config.sendTimeout != null) client.SendTimeout = (int)config.sendTimeout;
+            if (config.recvTimeout != null) client.ReceiveTimeout = (int)config.recvTimeout;
 
             stream = client.GetStream();
         }

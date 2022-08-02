@@ -9,17 +9,35 @@
     {
         /// we also need to have a field for the type of the PLC at hand
         /// since subcommand stuff depends on the PLC type
-        public int port;
-        public int conn_timeout;
-        public int recv_timeout;
-        public int send_timeout;
+        public int port = 6307;
+        public int? connTimeout = null;
+        public int? recvTimeout = null;
+        public int? sendTimeout = null;
 
-        public Config(int port, int conn_timeout, int recv_timeout, int send_timeout)
+        public Config() {}
+
+        public Config Port(int value)
         {
-            this.port = port;
-            this.conn_timeout = conn_timeout;
-            this.recv_timeout = recv_timeout;
-            this.send_timeout = send_timeout;
+            port = value;
+            return this;
+        }
+
+        public Config ConnTimeout(int value)
+        {
+            connTimeout = value;
+            return this;
+        }
+
+        public Config RecvTimeout(int value)
+        {
+            recvTimeout = value;
+            return this;
+        }
+
+        public Config SendTimeout(int value)
+        {
+            sendTimeout = value;
+            return this;
         }
     }
 }
