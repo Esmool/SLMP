@@ -39,7 +39,7 @@ namespace SLMP
             stream = client.GetStream();
         }
 
-        public List<bool> ReadBitDevice(Device device, UInt16 addr, UInt16 count)
+        public List<bool> ReadBitDevice(Device device, ushort addr, ushort count)
         {
             SendReadDeviceCommand(device, addr, count);
             List<byte> response = ReceiveResponse();
@@ -53,15 +53,15 @@ namespace SLMP
             return result.GetRange(0, count);
         }
 
-        public List<UInt16> ReadWordDevice(Device device, UInt16 addr, UInt16 count)
+        public List<ushort> ReadWordDevice(Device device, ushort addr, ushort count)
         {
             SendReadDeviceCommand(device, addr, count);
             List<byte> response = ReceiveResponse();
-            List<UInt16> result = new();
+            List<ushort> result = new();
 
             // if the length of the response isn't even
             // then the response is invalid and we can't
-            // construct an array of `UInt16`s from it
+            // construct an array of `ushort`s from it
             if (response.Count() % 2 != 0)
                 throw new Exception("invalid response");
 
@@ -71,15 +71,15 @@ namespace SLMP
             response
                 .Chunk(2)
                 .ToList()
-                .ForEach(n => result.Add((UInt16)(n[1] << 8 | n[0])));
+                .ForEach(n => result.Add((ushort)(n[1] << 8 | n[0])));
 
             return result;
 
         }
 
-        public void WriteDevice(Device device, UInt16 addr, bool[] data)
+        public void WriteDevice(Device device, ushort addr, bool[] data)
         {
-            UInt16 count = (UInt16)data.Length;
+            ushort count = (ushort)data.Length;
             List<bool> listData = data.ToList();
             List<byte> encodedData = new();
 
@@ -96,12 +96,12 @@ namespace SLMP
             ReceiveResponse();
         }
 
-        public void WriteDevice(Device device, UInt16 addr, UInt16[] data)
+        public void WriteDevice(Device device, ushort addr, ushort[] data)
         {
-            UInt16 count = (UInt16)data.Length;
+            ushort count = (ushort)data.Length;
             List<byte> encodedData = new();
 
-            foreach (UInt16 word in data)
+            foreach (ushort word in data)
             {
                 encodedData.Add((byte)(word & 0xff));
                 encodedData.Add((byte)(word >> 0x8));
@@ -115,7 +115,7 @@ namespace SLMP
         /// Gets the subcommand.
         /// </summary>
         /// <exception cref="System.ArgumentException">invalid device type provided</exception>
-        private UInt16 GetSubcommand(DeviceType type)
+        private ushort GetSubcommand(DeviceType type)
         {
             switch (type)
             {
@@ -192,15 +192,15 @@ namespace SLMP
         /// <summary>
         /// Sends the read device command.
         /// </summary>
-        private void SendReadDeviceCommand(Device device, UInt16 adr, UInt16 cnt)
+        private void SendReadDeviceCommand(Device device, ushort adr, ushort cnt)
         {
             if (stream == null)
                 throw new Exception("connection isn't established");
 
             List<byte> rawRequest = HEADER.ToList();
 
-            UInt16 cmd = (UInt16)Command.DeviceRead;
-            UInt16 sub = GetSubcommand(DeviceExt.GetDeviceType(device));
+            ushort cmd = (ushort)Command.DeviceRead;
+            ushort sub = GetSubcommand(DeviceExt.GetDeviceType(device));
 
             rawRequest.AddRange(new byte[]{
                 // request data length (in terms of bytes): fixed size (12) for the read command
@@ -219,16 +219,16 @@ namespace SLMP
             stream.Write(rawRequest.ToArray());
         }
 
-        private void SendWriteDeviceCommand(Device device, UInt16 adr, UInt16 cnt, byte[] data)
+        private void SendWriteDeviceCommand(Device device, ushort adr, ushort cnt, byte[] data)
         {
             if (stream == null)
                 throw new Exception("connection isn't established");
 
             List<byte> rawRequest = HEADER.ToList();
 
-            UInt16 cmd = (UInt16)Command.DeviceWrite;
-            UInt16 sub = GetSubcommand(DeviceExt.GetDeviceType(device));
-            UInt16 len = (UInt16)(data.Length + 0x000c);
+            ushort cmd = (ushort)Command.DeviceWrite;
+            ushort sub = GetSubcommand(DeviceExt.GetDeviceType(device));
+            ushort len = (ushort)(data.Length + 0x000c);
 
             rawRequest.AddRange(new byte[]{
                 // request data length (in terms of bytes): (12 + data.Length)
