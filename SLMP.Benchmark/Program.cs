@@ -30,8 +30,9 @@ namespace SLMP.Benchmark
             else
                 program = new Program("192.168.3.201", 6000);
 
-            program.Connect();
-            program.BenchRead();
+            program.Connect(); Console.WriteLine("-------");
+            program.BenchRead(); Console.WriteLine("-------");
+            program.BenchWrite();
         }
 
         private void Connect()
@@ -52,31 +53,44 @@ namespace SLMP.Benchmark
 
         private void BenchRead()
         {
+            Log(LogType.WARN, "BenchRead");
+
+            int loop_count = 500;
+            int regr_count = 960;
+
             var watch = new Stopwatch();
-
-            int outer_loop_count = 100;
-            int inner_loop_count = 10;
-            int register_count = 255;
-            int total = outer_loop_count * inner_loop_count * register_count;
-
-            Log(LogType.DEBUG, $"outer_loop_count: {outer_loop_count }");
-            Log(LogType.DEBUG, $"inner_loop_count: {inner_loop_count}");
-            Log(LogType.DEBUG, $"  register_count: {register_count}");
-            Log(LogType.DEBUG, $"           total: {total}");
-
             watch.Start();
-            for (int i = 0; i < outer_loop_count; i++)
+            for (int i = 0; i < loop_count; i++)
             {
-                for (int u = 0; u < inner_loop_count; u++)
-                {
-                    var result = slmpClient.ReadDevice(
-                        WordDevice.D, (ushort)i, (ushort)register_count);
-                }
+                slmpClient.ReadDevice(
+                    WordDevice.D, (ushort)0, (ushort)regr_count);
             }
             watch.Stop();
 
-            Log(LogType.INFO, $"    calisma suresi: {watch.ElapsedMilliseconds}ms");
-            Log(LogType.INFO, $"register sayisi/sn: {1000 * total / watch.ElapsedMilliseconds}");
+            Log(LogType.DEBUG, $"loop_count: {loop_count }");
+            Log(LogType.DEBUG, $"register_count: {regr_count}");
+            Log(LogType.INFO, $"calisma suresi: {watch.ElapsedMilliseconds}ms");
+            Log(LogType.INFO, $"komut sayisi/sn: {1000 * loop_count / watch.ElapsedMilliseconds}");
+        }
+
+        private void BenchWrite()
+        {
+            Log(LogType.WARN, "BenchWrite");
+
+            int loop_count = 500;
+            ushort[] wdata = { 0, 0, 0, 0, 0, 0, };
+
+            var watch = new Stopwatch();
+            watch.Start();
+            for (int i = 0; i < loop_count; i++)
+            {
+                slmpClient.WriteDevice(WordDevice.D, (ushort)0, wdata);
+            }
+            watch.Stop();
+
+            Log(LogType.DEBUG, $"loop_count: {loop_count }");
+            Log(LogType.INFO, $"calisma suresi: {watch.ElapsedMilliseconds}ms");
+            Log(LogType.INFO, $"komut sayisi/sn: {1000 * loop_count / watch.ElapsedMilliseconds}");
         }
 
         private static void Log(LogType type, string message)
@@ -85,8 +99,8 @@ namespace SLMP.Benchmark
             switch (type)
             {
                 case LogType.DEBUG: mrkpStr = "blue"; break;
-                case  LogType.INFO: mrkpStr = "green"; break;
-                case  LogType.WARN: mrkpStr = "yellow"; break;
+                case LogType.INFO:  mrkpStr = "green"; break;
+                case LogType.WARN:  mrkpStr = "yellow"; break;
                 case LogType.ERROR: mrkpStr = "red"; break;
             }
             string typeStr = type.ToString();

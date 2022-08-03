@@ -1,5 +1,8 @@
 ﻿namespace SLMP
 {
+    /// <summary>
+    /// This enum encodes the supported word devices that is available to operate on.
+    /// </summary>
     public enum WordDevice
     {
         D  = 0xa8,
@@ -9,6 +12,9 @@
         SD = 0xa9,
     }
 
+    /// <summary>
+    /// This enum encodes the supported bit devices that is available to operate on.
+    /// </summary>
     public enum BitDevice
     {
         X  = 0x9c,

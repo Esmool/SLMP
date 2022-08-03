@@ -20,12 +20,17 @@ namespace SLMP
         private TcpClient client;
         private NetworkStream? stream;
 
+        /// <summary>Initializes a new instance of the <see cref="Client" /> class.</summary>
+        /// <param name="cfg">The config.</param>
         public Client(Config cfg)
         {
             config = cfg;
             client = new TcpClient();
         }
 
+        /// <summary>Connects to the specified address.</summary>
+        /// <param name="addr">The addr.</param>
+        /// <exception cref="System.TimeoutException">connection timed out</exception>
         public void Connect(string addr)
         {
             switch (config.connTimeout)
@@ -46,6 +51,10 @@ namespace SLMP
             stream = client.GetStream();
         }
 
+        /// <summary>Reads a given BitDevice and returns a List&lt;bool&gt;.</summary>
+        /// <param name="device">The bit device.</param>
+        /// <param name="addr">Start address.</param>
+        /// <param name="count">Number of registers to read.</param>
         public List<bool> ReadDevice(BitDevice device, ushort addr, ushort count)
         {
             SendReadDeviceCommand(device, addr, count);
@@ -60,6 +69,11 @@ namespace SLMP
             return result.GetRange(0, count);
         }
 
+        /// <summary>Reads a given WordDevice and returns a List&lt;ushort&gt;.</summary>
+        /// <param name="device">The word device.</param>
+        /// <param name="addr">Start address.</param>
+        /// <param name="count">Number of registers to read.</param>
+        /// <exception cref="System.Exception">invalid response</exception>
         public List<ushort> ReadDevice(WordDevice device, ushort addr, ushort count)
         {
             SendReadDeviceCommand(device, addr, count);
@@ -84,12 +98,18 @@ namespace SLMP
 
         }
 
+        /// <summary>Writes an array of `bool`s to a given `BitDevice`.</summary>
+        /// <param name="device">The BitDevice to write.</param>
+        /// <param name="addr">Starting address.</param>
+        /// <param name="data">Data to be written into the remote device.</param>
         public void WriteDevice(BitDevice device, ushort addr, bool[] data)
         {
             ushort count = (ushort)data.Length;
             List<bool> listData = data.ToList();
             List<byte> encodedData = new();
 
+            // If the length of `data` isn't even, add a dummy
+            // `false` to make the encoding easier. It gets ignored on the station side.
             if (count % 2 != 0)
                 listData.Add(false);
 
@@ -103,6 +123,10 @@ namespace SLMP
             ReceiveResponse();
         }
 
+        /// <summary>Writes an array of `ushort`s to a given `WordDevice`.</summary>
+        /// <param name="device">The WordDevice to write.</param>
+        /// <param name="addr">Starting address.</param>
+        /// <param name="data">Data to be written into the remote device.</param>
         public void WriteDevice(WordDevice device, ushort addr, ushort[] data)
         {
             ushort count = (ushort)data.Length;
@@ -133,10 +157,8 @@ namespace SLMP
             }
         }
 
-        /// <summary>
-        /// This function exists because `NetworkStream` doesn't
-        /// have a `recv_exact` method.
-        /// </summary>
+        /// <summary>This function exists because `NetworkStream` doesn't have a `recv_exact` method.</summary>
+        /// <param name="count">Number of bytes to receive.</param>
         private byte[] ReceiveBytes(int count)
         {
             if (stream == null)
@@ -156,6 +178,15 @@ namespace SLMP
             return buffer;
         }
 
+        /// <summary>Receives the response and returns the raw response data.</summary>
+        /// <returns>Raw response data</returns>
+        /// <exception cref="System.Exception">
+        /// connection isn't established
+        /// or
+        /// invalid start byte received: {value}
+        /// or
+        /// non-zero end code: {endCode:X}H
+        /// </exception>
         private List<byte> ReceiveResponse()
         {
             if (stream == null)
@@ -183,9 +214,11 @@ namespace SLMP
                     throw new Exception($"invalid start byte received: {value}");
             }
 
+            // calculate the response data length
             int dataSize = hdrBuf[^1] << 8 | hdrBuf[^2];
             List<byte> responseBuffer = ReceiveBytes(dataSize).ToList();
 
+            // if the encode isn't `0` then we know that we hit an error.
             int endCode = responseBuffer[1] << 8 | responseBuffer[0];
             if (endCode != 0)
                 throw new Exception($"non-zero end code: {endCode:X}H");
@@ -194,9 +227,11 @@ namespace SLMP
             return responseBuffer;
         }
 
-        /// <summary>
-        /// Sends the read device command.
-        /// </summary>
+        /// <summary>Sends the read device command.</summary>
+        /// <param name="device">The target device.</param>
+        /// <param name="adr">The address</param>
+        /// <param name="cnt">The count.</param>
+        /// <exception cref="System.Exception">connection isn't established</exception>
         private void SendReadDeviceCommand(dynamic device, ushort adr, ushort cnt)
         {
             if (stream == null)
@@ -224,6 +259,14 @@ namespace SLMP
             stream.Write(rawRequest.ToArray());
         }
 
+        /// <summary>
+        /// Sends the write device command.
+        /// </summary>
+        /// <param name="device">The target device</param>
+        /// <param name="adr">The address.</param>
+        /// <param name="cnt">Number of data points.</param>
+        /// <param name="data">Data itself.</param>
+        /// <exception cref="Exception"></exception>
         private void SendWriteDeviceCommand(dynamic device, ushort adr, ushort cnt, byte[] data)
         {
             if (stream == null)
