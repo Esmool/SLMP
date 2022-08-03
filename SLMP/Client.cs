@@ -146,7 +146,7 @@ namespace SLMP
         /// Gets the subcommand for a given `(Bit/Word)Device`.
         /// </summary>
         /// <exception cref="System.ArgumentException">invalid device type provided</exception>
-        private ushort GetSubcommand(dynamic type)
+        private static ushort GetSubcommand(dynamic type)
         {
             switch (type)
             {
