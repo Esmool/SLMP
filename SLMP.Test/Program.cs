@@ -27,8 +27,8 @@ namespace SLMP.Test {
             Program program = new Program(args[0], Int32.Parse(args[1]));
             program.Connect(); Console.WriteLine("-------");
             program.ReadBitDevices(); Console.WriteLine("-------");
-            program.ReadWordDevices(); Console.WriteLine("-------");
             program.WriteBitDevices(); Console.WriteLine("-------");
+            program.ReadWordDevices(); Console.WriteLine("-------");
             program.WriteWordDevices(); Console.WriteLine("-------");
             program.ExitTest();
         }
