@@ -23,8 +23,8 @@ namespace SLMP.Test {
         {
             Log(LogType.INFO, "Test programi baslatiliyor");
             Program program = new Program();
-            program.Connect(); Console.WriteLine("-----");
-            program.ReadBitDevices(); Console.WriteLine("-----");
+            program.Connect(); Console.WriteLine("-------");
+            program.ReadBitDevices(); Console.WriteLine("-------");
             program.ExitTest();
         }
 
@@ -46,6 +46,7 @@ namespace SLMP.Test {
             catch (Exception ex)
             {
                 Log(LogType.ERROR, $"Baglanti saglanamadi: {ex.Message}");
+                Console.WriteLine("-------");
                 ExitTest();
             }
         }
@@ -73,6 +74,31 @@ namespace SLMP.Test {
                 Log(LogType.INFO, "ReadBitDevices testi basari ile tamamlandi");
             else
                 Log(LogType.ERROR, "ReadBitDevices testi hata ile sounclandi");
+        }
+
+        private void ReadWordDevices()
+        {
+            bool errorOccured = false;
+            Log(LogType.INFO, "Word cihazlarindan okuma testi baslatiliyor");
+            foreach (Device device in WordDevices)
+            {
+                try
+                {
+                    Log(LogType.DEBUG, $"Read({device.ToString()}, addr=0, count=32)");
+                    client.ReadWordDevice(device, 0, 32);
+                }
+                catch (Exception ex)
+                {
+                    Log(LogType.ERROR, $"{device.ToString()} cihazindan okuma yapilamadi: {ex.Message}");
+                    errorOccured = true;
+                    continue;
+                }
+            }
+            
+            if (!errorOccured)
+                Log(LogType.INFO, "ReadWordDevices testi basari ile tamamlandi");
+            else
+                Log(LogType.ERROR, "ReadWordDevices testi hata ile sounclandi");
         }
 
         private static void Log(LogType type, string message)
