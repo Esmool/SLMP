@@ -44,17 +44,25 @@ namespace SLMP.Benchmark
         private void BenchRead()
         {
             var watch = new Stopwatch();
-            watch.Start();
 
-            for (int i = 0; i < 100; i++)
+            int outer_loop_count = 100;
+            int inner_loop_count = 10;
+            int register_count = 255;
+            int total = outer_loop_count * inner_loop_count * register_count;
+
+            watch.Start();
+            for (int i = 0; i < outer_loop_count; i++)
             {
-                for (int u = 0; u < 10; u++)
+                for (int u = 0; u < inner_loop_count; u++)
                 {
-                    var result = slmpClient.ReadDevice(WordDevice.D, (ushort)i, 100);
+                    var result = slmpClient.ReadDevice(
+                        WordDevice.D, (ushort)i, (ushort)register_count);
                 }
             }
             watch.Stop();
-            Log(LogType.INFO, $"execution time: {watch.ElapsedMilliseconds}");
+
+            Log(LogType.INFO, $"             calisma suresi(ms): {watch.ElapsedMilliseconds}");
+            Log(LogType.INFO, $"saniyede okunan register sayisi: {1000 * total / watch.ElapsedMilliseconds}");
         }
 
         private static void Log(LogType type, string message)
