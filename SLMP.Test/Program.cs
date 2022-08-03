@@ -5,14 +5,15 @@ namespace SLMP.Test {
     {
         private Config config;
         private Client client;
-        private string ADDRESS = "192.168.3.201";
+        private string ADDRESS;
 
         Device[] BitDevices  = { Device.X, Device.Y, Device.B, Device.M, Device.SM };
         Device[] WordDevices = { Device.D, Device.W, Device.Z, Device.R, Device.SD, Device.ZR };
-        Program()
+        Program(string addr, int port)
         {
+            ADDRESS = addr;
             config = new Config()
-                .Port(6000)
+                .Port(port)
                 .ConnTimeout(500)
                 .RecvTimeout(1000)
                 .SendTimeout(1000);
@@ -22,7 +23,7 @@ namespace SLMP.Test {
         public static void Main(string[] args)
         {
             Log(LogType.INFO, "Test programi baslatiliyor");
-            Program program = new Program();
+            Program program = new Program(args[0], Int32.Parse(args[1]));
             program.Connect(); Console.WriteLine("-------");
             program.ReadBitDevices(); Console.WriteLine("-------");
             program.ReadWordDevices(); Console.WriteLine("-------");
