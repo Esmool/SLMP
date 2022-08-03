@@ -45,6 +45,7 @@ namespace SLMP.Test {
             try
             {
                 client.Connect(ADDRESS);
+                Log(LogType.INFO, "Baglanti basarili");
             }
             catch (Exception ex)
             {
