@@ -124,7 +124,7 @@ namespace SLMP
         /// <exception cref="System.ArgumentException">invalid device type provided</exception>
         private ushort GetSubcommand(dynamic type)
         {
-            switch (type.GetType())
+            switch (type)
             {
                 case  BitDevice d: return 0x0001;
                 case WordDevice d: return 0x0000;
