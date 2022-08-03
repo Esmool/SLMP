@@ -36,7 +36,7 @@ namespace SLMP.Benchmark
         {
             slmpClient.Connect(ADDRESS);
             slmpClient.ReadDevice(WordDevice.D, 200, 10)
-                .ForEach(p => Console.WriteLine("${p:X2}" ));
+                .ForEach(p => Console.WriteLine($"{p:X2}" ));
         }
 
         private static void Log(LogType type, string message)
