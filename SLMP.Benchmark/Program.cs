@@ -1,4 +1,5 @@
 ﻿using Spectre.Console;
+using System.Diagnostics;
 
 namespace SLMP.Benchmark
 { 
@@ -30,6 +31,7 @@ namespace SLMP.Benchmark
                 program = new Program("192.168.3.201", 6000);
 
             program.Connect();
+            program.BenchRead();
         }
 
         private void Connect()
@@ -37,6 +39,22 @@ namespace SLMP.Benchmark
             slmpClient.Connect(ADDRESS);
             slmpClient.ReadDevice(WordDevice.D, 200, 10)
                 .ForEach(p => Console.WriteLine($"{p:X2}" ));
+        }
+
+        private void BenchRead()
+        {
+            var watch = new Stopwatch();
+            watch.Start();
+
+            for (int i = 0; i < 100; i++)
+            {
+                for (int u = 0; u < 10; u++)
+                {
+                    var result = slmpClient.ReadDevice(WordDevice.D, (ushort)i, 100);
+                }
+            }
+            watch.Stop();
+            Log(LogType.INFO, $"execution time: {watch.ElapsedMilliseconds}");
         }
 
         private static void Log(LogType type, string message)
