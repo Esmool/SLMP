@@ -1,51 +1,21 @@
 ﻿namespace SLMP
 {
-    public enum Device
+    public enum WordDevice
     {
-        SM = 0x91,
-        SD = 0xa9,
-        X  = 0x9c,
-        Y  = 0x9d,
-        M  = 0x90,
-        B  = 0xa0,
         D  = 0xa8,
         W  = 0xb4,
         Z  = 0xcc,
         R  = 0xaf,
         ZR = 0xb0,
+        SD = 0xa9,
     }
 
-    public enum DeviceType
+    public enum BitDevice
     {
-        Bit,
-        Word,
-        // DoubleWord,
-    }
-
-    public class DeviceExt
-    {
-        public static DeviceType GetDeviceType(Device device)
-        {
-            switch (device)
-            {
-                case Device.X:
-                case Device.Y:
-                case Device.M:
-                case Device.B:
-                case Device.SM:
-                    return DeviceType.Bit;
-
-                case Device.D:
-                case Device.W:
-                case Device.Z:
-                case Device.R:
-                case Device.ZR:
-                case Device.SD:
-                    return DeviceType.Word;
-
-                default:
-                    throw new ArgumentException("invalid device provided");
-            }
-        }
+        X  = 0x9c,
+        Y  = 0x9d,
+        M  = 0x90,
+        B  = 0xa0,
+        SM = 0x91,
     }
 }

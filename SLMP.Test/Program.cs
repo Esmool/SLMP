@@ -7,8 +7,9 @@ namespace SLMP.Test {
         private Client client;
         private string ADDRESS;
 
-        Device[] BitDevices  = { Device.X, Device.Y, Device.B, Device.M, Device.SM };
-        Device[] WordDevices = { Device.D, Device.W, Device.Z, Device.R, Device.SD, Device.ZR };
+        BitDevice[] BitDevices = (BitDevice[])Enum.GetValues(typeof(BitDevice));
+        WordDevice[] WordDevices = (WordDevice[])Enum.GetValues(typeof(WordDevice));
+
         Program(string addr, int port)
         {
             ADDRESS = addr;
@@ -42,7 +43,7 @@ namespace SLMP.Test {
         private void Connect()
         {
             Log(LogType.INFO, "PLC'e baglanti testi baslatiliyor");
-            Log(LogType.DEBUG, $"Baglanilan adres: {ADDRESS}");
+            Log(LogType.DEBUG, $"Baglanilan adres: {ADDRESS}:{config.port}");
             try
             {
                 client.Connect(ADDRESS);
@@ -60,12 +61,12 @@ namespace SLMP.Test {
         {
             bool errorOccured = false;
             Log(LogType.INFO, "Bit cihazlarindan okuma testi baslatiliyor");
-            foreach (Device device in BitDevices)
+            foreach (BitDevice device in BitDevices)
             {
                 try
                 {
                     Log(LogType.DEBUG, $"Read({device.ToString()}, addr=0, count=32)");
-                    client.ReadBitDevice(device, 0, 32);
+                    client.ReadDevice(device, 0, 32);
                 }
                 catch (Exception ex)
                 {
@@ -85,12 +86,12 @@ namespace SLMP.Test {
         {
             bool errorOccured = false;
             Log(LogType.INFO, "Word cihazlarindan okuma testi baslatiliyor");
-            foreach (Device device in WordDevices)
+            foreach (WordDevice device in WordDevices)
             {
                 try
                 {
                     Log(LogType.DEBUG, $"Read({device.ToString()}, addr=0, count=32)");
-                    client.ReadWordDevice(device, 0, 32);
+                    client.ReadDevice(device, 0, 32);
                 }
                 catch (Exception ex)
                 {
@@ -110,7 +111,7 @@ namespace SLMP.Test {
         {
             bool errorOccured = false;
             Log(LogType.INFO, "Bit cihazlarina yazma testi baslatiliyor");
-            foreach (Device device in BitDevices)
+            foreach (BitDevice device in BitDevices)
             {
                 try
                 {
@@ -135,7 +136,7 @@ namespace SLMP.Test {
         {
             bool errorOccured = false;
             Log(LogType.INFO, "Word cihazlarina yazma testi baslatiliyor");
-            foreach (Device device in WordDevices)
+            foreach (WordDevice device in WordDevices)
             {
                 try
                 {

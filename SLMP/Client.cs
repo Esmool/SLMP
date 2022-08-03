@@ -46,7 +46,7 @@ namespace SLMP
             stream = client.GetStream();
         }
 
-        public List<bool> ReadBitDevice(Device device, ushort addr, ushort count)
+        public List<bool> ReadDevice(BitDevice device, ushort addr, ushort count)
         {
             SendReadDeviceCommand(device, addr, count);
             List<byte> response = ReceiveResponse();
@@ -60,7 +60,7 @@ namespace SLMP
             return result.GetRange(0, count);
         }
 
-        public List<ushort> ReadWordDevice(Device device, ushort addr, ushort count)
+        public List<ushort> ReadDevice(WordDevice device, ushort addr, ushort count)
         {
             SendReadDeviceCommand(device, addr, count);
             List<byte> response = ReceiveResponse();
@@ -84,7 +84,7 @@ namespace SLMP
 
         }
 
-        public void WriteDevice(Device device, ushort addr, bool[] data)
+        public void WriteDevice(BitDevice device, ushort addr, bool[] data)
         {
             ushort count = (ushort)data.Length;
             List<bool> listData = data.ToList();
@@ -103,7 +103,7 @@ namespace SLMP
             ReceiveResponse();
         }
 
-        public void WriteDevice(Device device, ushort addr, ushort[] data)
+        public void WriteDevice(WordDevice device, ushort addr, ushort[] data)
         {
             ushort count = (ushort)data.Length;
             List<byte> encodedData = new();
@@ -122,13 +122,13 @@ namespace SLMP
         /// Gets the subcommand.
         /// </summary>
         /// <exception cref="System.ArgumentException">invalid device type provided</exception>
-        private ushort GetSubcommand(DeviceType type)
+        private ushort GetSubcommand(dynamic type)
         {
-            switch (type)
+            switch (type.GetType())
             {
-                case DeviceType.Bit:
+                case BitDevice:
                     return 0x0001;
-                case DeviceType.Word:
+                case WordDevice:
                     return 0x0000;
                 default:
                     throw new ArgumentException("invalid device type provided");
@@ -199,7 +199,7 @@ namespace SLMP
         /// <summary>
         /// Sends the read device command.
         /// </summary>
-        private void SendReadDeviceCommand(Device device, ushort adr, ushort cnt)
+        private void SendReadDeviceCommand(dynamic device, ushort adr, ushort cnt)
         {
             if (stream == null)
                 throw new Exception("connection isn't established");
@@ -207,7 +207,7 @@ namespace SLMP
             List<byte> rawRequest = HEADER.ToList();
 
             ushort cmd = (ushort)Command.DeviceRead;
-            ushort sub = GetSubcommand(DeviceExt.GetDeviceType(device));
+            ushort sub = GetSubcommand(device);
 
             rawRequest.AddRange(new byte[]{
                 // request data length (in terms of bytes): fixed size (12) for the read command
@@ -226,7 +226,7 @@ namespace SLMP
             stream.Write(rawRequest.ToArray());
         }
 
-        private void SendWriteDeviceCommand(Device device, ushort adr, ushort cnt, byte[] data)
+        private void SendWriteDeviceCommand(dynamic device, ushort adr, ushort cnt, byte[] data)
         {
             if (stream == null)
                 throw new Exception("connection isn't established");
@@ -234,7 +234,7 @@ namespace SLMP
             List<byte> rawRequest = HEADER.ToList();
 
             ushort cmd = (ushort)Command.DeviceWrite;
-            ushort sub = GetSubcommand(DeviceExt.GetDeviceType(device));
+            ushort sub = GetSubcommand(device);
             ushort len = (ushort)(data.Length + 0x000c);
 
             rawRequest.AddRange(new byte[]{
