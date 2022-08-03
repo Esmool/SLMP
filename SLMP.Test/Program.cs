@@ -24,7 +24,13 @@ namespace SLMP.Test {
         public static void Main(string[] args)
         {
             Log(LogType.INFO, "Test programi baslatiliyor");
-            Program program = new Program(args[0], Int32.Parse(args[1]));
+
+            Program program;
+            if (args.Length == 3)
+                program = new Program(args[0], Int32.Parse(args[1]));
+            else
+                program = new Program("192.168.3.201", 6000);
+
             program.Connect(); Console.WriteLine("-------");
             program.ReadBitDevices(); Console.WriteLine("-------");
             program.WriteBitDevices(); Console.WriteLine("-------");
