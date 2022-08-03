@@ -25,6 +25,7 @@ namespace SLMP.Test {
             Program program = new Program();
             program.Connect(); Console.WriteLine("-----");
             program.ReadBitDevices(); Console.WriteLine("-----");
+            program.ExitTest();
         }
 
         private void ExitTest()
@@ -51,6 +52,7 @@ namespace SLMP.Test {
 
         private void ReadBitDevices()
         {
+            bool errorOccured = false;
             Log(LogType.INFO, "Bit cihazlarindan okuma testi baslatiliyor");
             foreach (Device device in BitDevices)
             {
@@ -61,10 +63,16 @@ namespace SLMP.Test {
                 }
                 catch (Exception ex)
                 {
-                    Log(LogType.ERROR, $"{device.ToString()} cihazindan okuma yapilamadi: ${ex.Message}");
+                    Log(LogType.ERROR, $"{device.ToString()} cihazindan okuma yapilamadi: {ex.Message}");
+                    errorOccured = true;
                     continue;
                 }
             }
+            
+            if (!errorOccured)
+                Log(LogType.INFO, "ReadBitDevices testi basari ile tamamlandi");
+            else
+                Log(LogType.ERROR, "ReadBitDevices testi hata ile sounclandi");
         }
 
         private static void Log(LogType type, string message)
@@ -79,8 +87,7 @@ namespace SLMP.Test {
             }
             string typeStr = type.ToString();
             string dateStr = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
-            AnsiConsole.Markup($"[[[{mrkpStr}]{typeStr,5}[/]]] [[{dateStr}]] {message}");
-            Console.WriteLine($"");
+            AnsiConsole.MarkupLine($"[[[{mrkpStr}]{typeStr,5}[/]]] [[{dateStr}]] {message}");
         }
     }
 
