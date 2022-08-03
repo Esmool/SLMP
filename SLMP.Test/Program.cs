@@ -112,7 +112,7 @@ namespace SLMP.Test {
             {
                 try
                 {
-                    Log(LogType.DEBUG, $"Write({device.ToString()}, addr=0, [true, false, true, false])");
+                    Log(LogType.DEBUG, $"Write({device.ToString()}, addr=0, [[true, false, true, false]])");
                     client.WriteDevice(device, 0, new bool[]{ true, false, true, false });
                 }
                 catch (Exception ex)
@@ -137,7 +137,7 @@ namespace SLMP.Test {
             {
                 try
                 {
-                    Log(LogType.DEBUG, $"Write({device.ToString()}, addr=0, [0xdead, 0xbeef])");
+                    Log(LogType.DEBUG, $"Write({device.ToString()}, addr=0, [[0xdead, 0xbeef]])");
                     client.WriteDevice(device, 0, new ushort[]{ 0xdead, 0xbeef });
                 }
                 catch (Exception ex)
