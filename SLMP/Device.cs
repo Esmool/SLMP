@@ -4,7 +4,6 @@
     {
         D  = 0xa8,
         W  = 0xb4,
-        Z  = 0xcc,
         R  = 0xaf,
         ZR = 0xb0,
         SD = 0xa9,
