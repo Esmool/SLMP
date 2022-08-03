@@ -36,9 +36,18 @@ namespace SLMP.Benchmark
 
         private void Connect()
         {
-            slmpClient.Connect(ADDRESS);
-            slmpClient.ReadDevice(WordDevice.D, 200, 10)
-                .ForEach(p => Console.WriteLine($"{p:X2}" ));
+            Log(LogType.INFO, "PLC'e baglanti testi baslatiliyor");
+            Log(LogType.DEBUG, $"Baglanilan adres: {ADDRESS}:{slmpConfig.port}");
+            try
+            {
+                slmpClient.Connect(ADDRESS);
+                Log(LogType.INFO, "Baglanti basarili");
+            }
+            catch (Exception ex)
+            {
+                Log(LogType.ERROR, $"Baglanti saglanamadi: {ex.Message}");
+                System.Environment.Exit(0);
+            }
         }
 
         private void BenchRead()
@@ -49,6 +58,11 @@ namespace SLMP.Benchmark
             int inner_loop_count = 10;
             int register_count = 255;
             int total = outer_loop_count * inner_loop_count * register_count;
+
+            Log(LogType.DEBUG, $"outer_loop_count: {outer_loop_count }");
+            Log(LogType.DEBUG, $"inner_loop_count: {inner_loop_count}");
+            Log(LogType.DEBUG, $"  register_count: {register_count}");
+            Log(LogType.DEBUG, $"           total: {total}");
 
             watch.Start();
             for (int i = 0; i < outer_loop_count; i++)
@@ -61,8 +75,8 @@ namespace SLMP.Benchmark
             }
             watch.Stop();
 
-            Log(LogType.INFO, $"             calisma suresi(ms): {watch.ElapsedMilliseconds}");
-            Log(LogType.INFO, $"saniyede okunan register sayisi: {1000 * total / watch.ElapsedMilliseconds}");
+            Log(LogType.INFO, $"    calisma suresi: {watch.ElapsedMilliseconds}ms");
+            Log(LogType.INFO, $"register sayisi/sn: {1000 * total / watch.ElapsedMilliseconds}");
         }
 
         private static void Log(LogType type, string message)
