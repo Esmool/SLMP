@@ -141,6 +141,24 @@ namespace SLMP
             SendWriteDeviceCommand(device, addr, count, encodedData.ToArray());
             ReceiveResponse();
         }
+        public void WriteString(WordDevice device, ushort addr, string text)
+        {
+            // add a 16 bit `null` terminator
+            text += "\0\0";
+            // if the length of the string isn't
+            // even, add a dummy null (0x00) character
+            if (text.Length % 2 == 1)
+                text += '\0';
+
+            List<ushort> result = new();
+
+            System.Text.Encoding.ASCII.GetBytes(text.ToCharArray())
+                .Chunk(2)
+                .ToList()
+                .ForEach(a => result.Add((ushort)(a[1] << 8 | a[0])));
+
+            WriteDevice(device, addr, result.ToArray());
+        }
 
         /// <summary>
         /// Gets the subcommand for a given `(Bit/Word)Device`.
