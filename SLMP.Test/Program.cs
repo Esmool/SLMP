@@ -25,6 +25,9 @@ namespace SLMP.Test {
             Program program = new Program();
             program.Connect(); Console.WriteLine("-------");
             program.ReadBitDevices(); Console.WriteLine("-------");
+            program.ReadWordDevices(); Console.WriteLine("-------");
+            program.WriteBitDevices(); Console.WriteLine("-------");
+            program.WriteWordDevices(); Console.WriteLine("-------");
             program.ExitTest();
         }
 
@@ -99,6 +102,56 @@ namespace SLMP.Test {
                 Log(LogType.INFO, "ReadWordDevices testi basari ile tamamlandi");
             else
                 Log(LogType.ERROR, "ReadWordDevices testi hata ile sounclandi");
+        }
+
+        private void WriteBitDevices()
+        {
+            bool errorOccured = false;
+            Log(LogType.INFO, "Bit cihazlarina yazma testi baslatiliyor");
+            foreach (Device device in BitDevices)
+            {
+                try
+                {
+                    Log(LogType.DEBUG, $"Write({device.ToString()}, addr=0, [true, false, true, false])");
+                    client.WriteDevice(device, 0, new bool[]{ true, false, true, false });
+                }
+                catch (Exception ex)
+                {
+                    Log(LogType.ERROR, $"{device.ToString()} cihazina yazma yapilamadi: {ex.Message}");
+                    errorOccured = true;
+                    continue;
+                }
+            }
+            
+            if (!errorOccured)
+                Log(LogType.INFO, "WriteBitDevices testi basari ile tamamlandi");
+            else
+                Log(LogType.ERROR, "WriteBitDevices testi hata ile sounclandi");
+        }
+
+        private void WriteWordDevices()
+        {
+            bool errorOccured = false;
+            Log(LogType.INFO, "Word cihazlarina yazma testi baslatiliyor");
+            foreach (Device device in BitDevices)
+            {
+                try
+                {
+                    Log(LogType.DEBUG, $"Write({device.ToString()}, addr=0, [0xdead, 0xbeef])");
+                    client.WriteDevice(device, 0, new ushort[]{ 0xdead, 0xbeef });
+                }
+                catch (Exception ex)
+                {
+                    Log(LogType.ERROR, $"{device.ToString()} cihazina yazma yapilamadi: {ex.Message}");
+                    errorOccured = true;
+                    continue;
+                }
+            }
+            
+            if (!errorOccured)
+                Log(LogType.INFO, "WriteWordDevices testi basari ile tamamlandi");
+            else
+                Log(LogType.ERROR, "WriteWordDevices testi hata ile sounclandi");
         }
 
         private static void Log(LogType type, string message)
