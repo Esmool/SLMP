@@ -133,7 +133,7 @@ namespace SLMP.Test {
         {
             bool errorOccured = false;
             Log(LogType.INFO, "Word cihazlarina yazma testi baslatiliyor");
-            foreach (Device device in BitDevices)
+            foreach (Device device in WordDevices)
             {
                 try
                 {
