@@ -42,6 +42,7 @@ namespace SLMP.Test {
         private void ExitTest()
         {
             Log(LogType.INFO, "Test programi bitiriliyor");
+            Console.ReadLine();
             System.Environment.Exit(0);
         }
 
