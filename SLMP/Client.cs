@@ -77,7 +77,6 @@ namespace SLMP
         /// <param name="device">The word device.</param>
         /// <param name="addr">Start address.</param>
         /// <param name="count">Number of registers to read.</param>
-        /// <exception cref="System.Exception">invalid response</exception>
         public List<ushort> ReadDevice(WordDevice device, ushort addr, ushort count)
         {
             SendReadDeviceCommand(device, addr, count);
@@ -88,7 +87,7 @@ namespace SLMP
             // then the response is invalid and we can't
             // construct an array of `ushort`s from it
             if (response.Count() % 2 != 0)
-                throw new Exception("invalid response");
+                throw new InvalidDataException("While reading words: data section of the response is uneven");
 
             // word data is received in little endian format
             // which means the lower byte of a word comes first
@@ -214,8 +213,7 @@ namespace SLMP
         /// <param name="count">Number of bytes to receive.</param>
         private byte[] ReceiveBytes(int count)
         {
-            if (stream == null)
-                throw new Exception("connection isn't established");
+            CheckConnection();
 
             int offset = 0, toRead = count;
             int read;
@@ -233,17 +231,9 @@ namespace SLMP
 
         /// <summary>Receives the response and returns the raw response data.</summary>
         /// <returns>Raw response data</returns>
-        /// <exception cref="System.Exception">
-        /// connection isn't established
-        /// or
-        /// invalid start byte received: {value}
-        /// or
-        /// non-zero end code: {endCode:X}H
-        /// </exception>
         private List<byte> ReceiveResponse()
         {
-            if (stream == null)
-                throw new Exception("connection isn't established");
+            CheckConnection();
 
             // read a single byte to determine
             // if a serial no. is included or not
@@ -264,7 +254,7 @@ namespace SLMP
                 // in the case where we receive some other data, we mark it
                 // as invalid and throw an `Exception`
                 default:
-                    throw new Exception($"invalid start byte received: {value}");
+                    throw new InvalidDataException($"while reading respoonse header: invalid start byte received: {value}");
             }
 
             // calculate the response data length
@@ -274,7 +264,7 @@ namespace SLMP
             // if the encode isn't `0` then we know that we hit an error.
             int endCode = responseBuffer[1] << 8 | responseBuffer[0];
             if (endCode != 0)
-                throw new Exception($"non-zero end code: {endCode:X}H");
+                throw new SLMPException(endCode);
 
             responseBuffer.RemoveRange(0, 2);
             return responseBuffer;
@@ -284,11 +274,9 @@ namespace SLMP
         /// <param name="device">The target device.</param>
         /// <param name="adr">The address</param>
         /// <param name="cnt">The count.</param>
-        /// <exception cref="System.Exception">connection isn't established</exception>
         private void SendReadDeviceCommand(dynamic device, ushort adr, ushort cnt)
         {
-            if (stream == null)
-                throw new Exception("connection isn't established");
+            CheckConnection();
 
             List<byte> rawRequest = HEADER.ToList();
 
@@ -299,7 +287,7 @@ namespace SLMP
                 // request data length (in terms of bytes): fixed size (12) for the read command
                 0x0c, 0x00,
                 // monitoring timer. TODO: make this something configurable instead of hard-coding it.
-                0x00, 0x10,
+                0x00, 0x00,
                 (byte)(cmd & 0xff), (byte)(cmd >> 0x8),
                 (byte)(sub & 0xff), (byte)(sub >> 0x8),
                 (byte)(adr & 0xff), (byte)(adr >> 0x8),
@@ -319,11 +307,9 @@ namespace SLMP
         /// <param name="adr">The address.</param>
         /// <param name="cnt">Number of data points.</param>
         /// <param name="data">Data itself.</param>
-        /// <exception cref="Exception"></exception>
         private void SendWriteDeviceCommand(dynamic device, ushort adr, ushort cnt, byte[] data)
         {
-            if (stream == null)
-                throw new Exception("connection isn't established");
+            CheckConnection();
 
             List<byte> rawRequest = HEADER.ToList();
 
@@ -335,7 +321,7 @@ namespace SLMP
                 // request data length (in terms of bytes): (12 + data.Length)
                 (byte)(len & 0xff), (byte)(len >> 0x8),
                 // monitoring timer. TODO: make this something configurable instead of hard-coding it.
-                0x00, 0x10,
+                0x00, 0x00,
                 (byte)(cmd & 0xff), (byte)(cmd >> 0x8),
                 (byte)(sub & 0xff), (byte)(sub >> 0x8),
                 (byte)(adr & 0xff), (byte)(adr >> 0x8),
@@ -346,6 +332,12 @@ namespace SLMP
             rawRequest.AddRange(data);
 
             stream.Write(rawRequest.ToArray());
+        }
+
+        private void CheckConnection()
+        {
+            if (stream == null || client.Connected == false)
+                throw new NotConnectedException();
         }
     }
 }
