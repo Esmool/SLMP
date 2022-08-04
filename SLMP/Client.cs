@@ -2,6 +2,10 @@
 
 namespace SLMP
 {
+    /// <summary>
+    /// This class exposes functionality to connect and manage
+    /// SLMP-compatible devices.
+    /// </summary>
     public class Client
     {
         /// <summary>
@@ -11,7 +15,7 @@ namespace SLMP
         private readonly byte[] HEADER = {
             0x50, 0x00,     // subheader: no serial no.
             0x00,           // request destination network no.
-            0xff,           // request destination station no.
+            0xff,           // request deestination station no.
             0xff, 0x03,     // request destination module I/O no.: 0x03ff (own station)
             0x00,           // request destination multidrop station no.
         };
@@ -51,7 +55,7 @@ namespace SLMP
             stream = client.GetStream();
         }
 
-        /// <summary>Reads a given BitDevice and returns a List&lt;bool&gt;.</summary>
+        /// <summary>Reads from a given `BitDevice` and returns a list of `bool`s.</summary>
         /// <param name="device">The bit device.</param>
         /// <param name="addr">Start address.</param>
         /// <param name="count">Number of registers to read.</param>
@@ -69,7 +73,7 @@ namespace SLMP
             return result.GetRange(0, count);
         }
 
-        /// <summary>Reads a given WordDevice and returns a List&lt;ushort&gt;.</summary>
+        /// <summary>Reads from a given `WordDevice` and returns a list of `ushort`s.</summary>
         /// <param name="device">The word device.</param>
         /// <param name="addr">Start address.</param>
         /// <param name="count">Number of registers to read.</param>
@@ -95,7 +99,6 @@ namespace SLMP
                 .ForEach(n => result.Add((ushort)(n[1] << 8 | n[0])));
 
             return result;
-
         }
 
         /// <summary>Writes an array of `bool`s to a given `BitDevice`.</summary>

@@ -12,7 +12,8 @@
         public int? recvTimeout = null;
         public int? sendTimeout = null;
 
-        public Config() {}
+        /// <summary>Initializes a new instance of the <see cref="Config" /> class with default values.</summary>
+        public Config() { }
 
         /// <summary>
         /// Set the connection `port` to something other than the default value.
