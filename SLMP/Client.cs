@@ -141,6 +141,11 @@ namespace SLMP
             SendWriteDeviceCommand(device, addr, count, encodedData.ToArray());
             ReceiveResponse();
         }
+
+        /// <summary>Writes the given string to the specified device as a null terminated string.</summary>
+        /// <param name="device">The device.</param>
+        /// <param name="addr">Starting address.</param>
+        /// <param name="text">The string to write.</param>
         public void WriteString(WordDevice device, ushort addr, string text)
         {
             // add a 16 bit `null` terminator
@@ -158,6 +163,33 @@ namespace SLMP
                 .ForEach(a => result.Add((ushort)(a[1] << 8 | a[0])));
 
             WriteDevice(device, addr, result.ToArray());
+        }
+
+        /// <summary>
+        /// Reads a null terminated string from the specified `WordDevice`.
+        /// Note that this function reads the string at best two chars, ~500 times in a second. Meaning it can only read ~1000 chars per second.
+        /// </summary>
+        /// <param name="device">The device.</param>
+        /// <param name="addr">Starting address of the null terminated string.</param>
+        public string ReadString(WordDevice device, ushort addr)
+        {
+            ushort nullTerminator = (byte)'\0' << 8 | (byte)'\0';
+            List<ushort> stringBuffer = new();
+            List<char> charBuffer = new();
+
+            do {
+                stringBuffer.AddRange(ReadDevice(device, addr, 1));
+                addr += 1;
+            } while (stringBuffer.IndexOf(nullTerminator) == -1);
+
+            stringBuffer.RemoveAt(stringBuffer.Count - 1);
+            stringBuffer
+                .ForEach(a => {
+                    charBuffer.Add((char)(a & 0xff));
+                    charBuffer.Add((char)(a >> 0x8));
+                });
+
+            return string.Join("", charBuffer);
         }
 
         /// <summary>
