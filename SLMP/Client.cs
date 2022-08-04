@@ -55,7 +55,10 @@ namespace SLMP
             stream = client.GetStream();
         }
 
-        /// <summary>Reads from a given `BitDevice` and returns a list of `bool`s.</summary>
+        /// <summary>
+        /// Reads from a given `BitDevice` and returns a list of `bool`s.
+        /// Note that there's a limit on how many registers can be read at a time.
+        /// </summary>
         /// <param name="device">The bit device.</param>
         /// <param name="addr">Start address.</param>
         /// <param name="count">Number of registers to read.</param>
@@ -73,7 +76,10 @@ namespace SLMP
             return result.GetRange(0, count);
         }
 
-        /// <summary>Reads from a given `WordDevice` and returns a list of `ushort`s.</summary>
+        /// <summary>
+        /// Reads from a given `WordDevice` and returns a list of `ushort`s.
+        /// Note that there's a limit on how many registers can be read at a time.
+        /// </summary>
         /// <param name="device">The word device.</param>
         /// <param name="addr">Start address.</param>
         /// <param name="count">Number of registers to read.</param>
@@ -100,7 +106,10 @@ namespace SLMP
             return result;
         }
 
-        /// <summary>Writes an array of `bool`s to a given `BitDevice`.</summary>
+        /// <summary>
+        /// Writes an array of `bool`s to a given `BitDevice`.
+        /// Note that there's a limit on how many registers can be written at a time.
+        /// </summary>
         /// <param name="device">The BitDevice to write.</param>
         /// <param name="addr">Starting address.</param>
         /// <param name="data">Data to be written into the remote device.</param>
@@ -125,7 +134,10 @@ namespace SLMP
             ReceiveResponse();
         }
 
-        /// <summary>Writes an array of `ushort`s to a given `WordDevice`.</summary>
+        /// <summary>
+        /// Writes an array of `ushort`s to a given `WordDevice`.
+        /// Note that there's a limit on how many registers can be written at a time.
+        /// </summary>
         /// <param name="device">The WordDevice to write.</param>
         /// <param name="addr">Starting address.</param>
         /// <param name="data">Data to be written into the remote device.</param>
@@ -144,7 +156,10 @@ namespace SLMP
             ReceiveResponse();
         }
 
-        /// <summary>Writes the given string to the specified device as a null terminated string.</summary>
+        /// <summary>
+        /// Writes the given string to the specified device as a null terminated string.
+        /// Note that there's a limit on how many registers can be written at a time.
+        /// </summary>
         /// <param name="device">The device.</param>
         /// <param name="addr">Starting address.</param>
         /// <param name="text">The string to write.</param>
@@ -168,8 +183,10 @@ namespace SLMP
         }
 
         /// <summary>
-        /// Reads a null terminated string from the specified `WordDevice`.
-        /// Note that this function reads the string at best two chars, ~500 times in a second. Meaning it can only read ~1000 chars per second.
+        /// Reads a null terminated string from the specified `WordDevice`. Note that
+        /// this function reads the string at best two chars, ~500 times in a second.
+        /// Meaning it can only read ~1000 chars per second.
+        /// Note that there's a limit on how many registers can be read at a time.
         /// </summary>
         /// <param name="device">The device.</param>
         /// <param name="addr">Starting address of the null terminated string.</param>
