@@ -68,7 +68,8 @@ namespace SLMP
             List<byte> response = ReceiveResponse();
             List<bool> result = new();
 
-            response.ForEach(delegate(byte a) {
+            response.ForEach(delegate (byte a)
+            {
                 result.Add((a & 0x10) != 0);
                 result.Add((a & 0x01) != 0);
             });
@@ -196,19 +197,35 @@ namespace SLMP
             List<ushort> stringBuffer = new();
             List<char> charBuffer = new();
 
-            do {
+            do
+            {
                 stringBuffer.AddRange(ReadDevice(device, addr, 1));
                 addr += 1;
             } while (stringBuffer.IndexOf(nullTerminator) == -1);
 
             stringBuffer.RemoveAt(stringBuffer.Count - 1);
             stringBuffer
-                .ForEach(a => {
+                .ForEach(a =>
+                {
                     charBuffer.Add((char)(a & 0xff));
                     charBuffer.Add((char)(a >> 0x8));
                 });
 
             return string.Join("", charBuffer);
+        }
+
+        /// <summary>
+        /// Query the connection status.
+        /// </summary>
+        public bool Connected()
+        {
+            return stream != null && client.Connected != false;
+        }
+
+        private void CheckConnection()
+        {
+            if (!Connected())
+                throw new NotConnectedException();
         }
 
         /// <summary>
@@ -219,7 +236,7 @@ namespace SLMP
         {
             switch (type)
             {
-                case  BitDevice d: return 0x0001;
+                case BitDevice d: return 0x0001;
                 case WordDevice d: return 0x0000;
                 default:
                     throw new ArgumentException("invalid device type provided");
@@ -236,11 +253,13 @@ namespace SLMP
             int read;
             byte[] buffer = new byte[count];
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             while (toRead > 0 && (read = stream.Read(buffer, offset, toRead)) > 0)
             {
                 toRead -= read;
                 offset += read;
             }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
             if (toRead > 0) throw new EndOfStreamException();
 
             return buffer;
@@ -254,7 +273,9 @@ namespace SLMP
 
             // read a single byte to determine
             // if a serial no. is included or not
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             int value = stream.ReadByte();
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
             byte[] hdrBuf;
             switch (value)
             {
@@ -313,8 +334,9 @@ namespace SLMP
                 (byte)(cnt & 0xff), (byte)(cnt >> 0x8),
             });
 
-
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             stream.Write(rawRequest.ToArray());
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
 
         /// <summary>
@@ -348,13 +370,9 @@ namespace SLMP
             });
             rawRequest.AddRange(data);
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             stream.Write(rawRequest.ToArray());
-        }
-
-        private void CheckConnection()
-        {
-            if (stream == null || client.Connected == false)
-                throw new NotConnectedException();
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
     }
 }

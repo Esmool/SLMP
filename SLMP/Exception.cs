@@ -37,7 +37,7 @@ namespace SLMP
     /// <seealso cref="System.Exception" />
     public class SLMPException : Exception
     {
-        int SLMPEndCode;
+        public int SLMPEndCode;
         public SLMPException(int endCode)
             : base($"Received non-zero SLMP EndCode: {endCode:X4}H")
         {
