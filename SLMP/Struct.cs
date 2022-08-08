@@ -1,11 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SLMP
 {
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    public class SLMPStringAttribute : Attribute
+    {
+        public int length;
+        public int wordCount => length % 2 == 0 ? length / 2 + 1 : (length + 1) / 2;
+    }
+
     /// <summary>
     /// Functionality related to encoding/decoding struct.
     /// </summary>
@@ -24,7 +32,6 @@ namespace SLMP
             var fieldTypes = structType.GetFields();
 
             foreach (var field in fieldTypes)
-            {
                 switch (field.FieldType.Name)
                 {
                     case "Int16":
@@ -36,10 +43,18 @@ namespace SLMP
                     case "UInt32":
                         size += 2;
                         break;
+                    case "String":
+                        SLMPStringAttribute? attr = field
+                            .GetCustomAttributes<SLMPStringAttribute>()
+                            .SingleOrDefault();
+                        if (attr == default(SLMPStringAttribute))
+                            throw new Exception("please add a SLMPStringAttribute to the string.");
+
+                        size += attr.wordCount;
+                        break;
                     default:
                         throw new Exception($"unsupported type: {field.FieldType.Name}");
                 }
-            }
 
             return size;
         }
@@ -81,6 +96,24 @@ namespace SLMP
                         field.SetValue(
                             structObject, (UInt32)((words[index + 1] << 16) | words[index]));
                         index += 2;
+                        break;
+                    case "String":
+                        SLMPStringAttribute? attr = field
+                            .GetCustomAttributes<SLMPStringAttribute>()
+                            .SingleOrDefault();
+                        if (attr == default(SLMPStringAttribute))
+                            throw new Exception("please add a SLMPStringAttribute to the string.");
+
+                        List<char> buffer = new();
+                        for (int i = index; i < index + attr.wordCount; i++)
+                        {
+                            ushort word = words[i];
+                            buffer.Add((char)(word & 0xff));
+                            buffer.Add((char)(word >> 0x8));
+                        }
+                        field.SetValue(
+                            structObject, string.Join("", buffer.GetRange(0, attr.length)));
+                        index += attr.wordCount;
                         break;
                     default:
                         throw new Exception($"unsupported type: {field.FieldType.Name}");
