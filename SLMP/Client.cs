@@ -184,34 +184,26 @@ namespace SLMP
         }
 
         /// <summary>
-        /// Reads a null terminated string from the specified `WordDevice`. Note that
+        /// Reads a string with the length `len` from the specified `WordDevice`. Note that
         /// this function reads the string at best two chars, ~500 times in a second.
         /// Meaning it can only read ~1000 chars per second.
         /// Note that there's a limit on how many registers can be read at a time.
         /// </summary>
         /// <param name="device">The device.</param>
         /// <param name="addr">Starting address of the null terminated string.</param>
-        public string ReadString(WordDevice device, ushort addr)
+        /// <param name="len">Length of the string.</param>
+        public string ReadString(WordDevice device, ushort addr, ushort len)
         {
-            ushort nullTerminator = (byte)'\0' << 8 | (byte)'\0';
-            List<ushort> stringBuffer = new();
-            List<char> charBuffer = new();
+            ushort word_count = (ushort)((len % 2 == 0 ? len : len + 1) / 2);
+            List<char> buffer = new();
 
-            do
+            foreach (ushort word in ReadDevice(device, addr, word_count))
             {
-                stringBuffer.AddRange(ReadDevice(device, addr, 1));
-                addr += 1;
-            } while (stringBuffer.IndexOf(nullTerminator) == -1);
+                buffer.Add((char)(word & 0xff));
+                buffer.Add((char)(word >> 0x8));
+            }
 
-            stringBuffer.RemoveAt(stringBuffer.Count - 1);
-            stringBuffer
-                .ForEach(a =>
-                {
-                    charBuffer.Add((char)(a & 0xff));
-                    charBuffer.Add((char)(a >> 0x8));
-                });
-
-            return string.Join("", charBuffer);
+            return string.Join("", buffer.GetRange(0, len));
         }
 
         /// <summary>
