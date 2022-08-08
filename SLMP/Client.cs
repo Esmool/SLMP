@@ -56,13 +56,13 @@ namespace SLMP
         }
 
         /// <summary>
-        /// Reads from a given `BitDevice` and returns a list of `bool`s.
+        /// Reads from a given `BitDevice` and returns an array of `bool`s.
         /// Note that there's a limit on how many registers can be read at a time.
         /// </summary>
         /// <param name="device">The bit device.</param>
         /// <param name="addr">Start address.</param>
         /// <param name="count">Number of registers to read.</param>
-        public List<bool> ReadDevice(BitDevice device, ushort addr, ushort count)
+        public bool[] ReadDevice(BitDevice device, ushort addr, ushort count)
         {
             SendReadDeviceCommand(device, addr, count);
             List<byte> response = ReceiveResponse();
@@ -74,17 +74,17 @@ namespace SLMP
                 result.Add((a & 0x01) != 0);
             });
 
-            return result.GetRange(0, count);
+            return result.GetRange(0, count).ToArray();
         }
 
         /// <summary>
-        /// Reads from a given `WordDevice` and returns a list of `ushort`s.
+        /// Reads from a given `WordDevice` and returns an array of `ushort`s.
         /// Note that there's a limit on how many registers can be read at a time.
         /// </summary>
         /// <param name="device">The word device.</param>
         /// <param name="addr">Start address.</param>
         /// <param name="count">Number of registers to read.</param>
-        public List<ushort> ReadDevice(WordDevice device, ushort addr, ushort count)
+        public ushort[] ReadDevice(WordDevice device, ushort addr, ushort count)
         {
             SendReadDeviceCommand(device, addr, count);
             List<byte> response = ReceiveResponse();
@@ -93,7 +93,7 @@ namespace SLMP
             // if the length of the response isn't even
             // then the response is invalid and we can't
             // construct an array of `ushort`s from it
-            if (response.Count() % 2 != 0)
+            if (response.Count % 2 != 0)
                 throw new InvalidDataException("While reading words: data section of the response is uneven");
 
             // word data is received in little endian format
@@ -104,7 +104,7 @@ namespace SLMP
                 .ToList()
                 .ForEach(n => result.Add((ushort)(n[1] << 8 | n[0])));
 
-            return result;
+            return result.ToArray();
         }
 
         /// <summary>

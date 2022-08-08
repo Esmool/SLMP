@@ -1,6 +1,7 @@
 ﻿using Spectre.Console;
 
-namespace SLMP.Test {
+namespace SLMP.Test
+{
     class Program
     {
         private Config config;
@@ -82,7 +83,7 @@ namespace SLMP.Test {
                     continue;
                 }
             }
-            
+
             if (!errorOccured)
                 Log(LogType.INFO, "ReadBitDevices testi basari ile tamamlandi");
             else
@@ -107,7 +108,7 @@ namespace SLMP.Test {
                     continue;
                 }
             }
-            
+
             if (!errorOccured)
                 Log(LogType.INFO, "ReadWordDevices testi basari ile tamamlandi");
             else
@@ -123,7 +124,7 @@ namespace SLMP.Test {
                 try
                 {
                     Log(LogType.DEBUG, $"Write({device.ToString()}, addr=0, [[true, false, true, false]])");
-                    client.WriteDevice(device, 0, new bool[]{ true, false, true, false });
+                    client.WriteDevice(device, 0, new bool[] { true, false, true, false });
                 }
                 catch (Exception ex)
                 {
@@ -132,7 +133,7 @@ namespace SLMP.Test {
                     continue;
                 }
             }
-            
+
             if (!errorOccured)
                 Log(LogType.INFO, "WriteBitDevices testi basari ile tamamlandi");
             else
@@ -148,7 +149,7 @@ namespace SLMP.Test {
                 try
                 {
                     Log(LogType.DEBUG, $"Write({device.ToString()}, addr=0, [[0xdead, 0xbeef]])");
-                    client.WriteDevice(device, 0, new ushort[]{ 0xdead, 0xbeef });
+                    client.WriteDevice(device, 0, new ushort[] { 0xdead, 0xbeef });
                 }
                 catch (Exception ex)
                 {
@@ -157,7 +158,7 @@ namespace SLMP.Test {
                     continue;
                 }
             }
-            
+
             if (!errorOccured)
                 Log(LogType.INFO, "WriteWordDevices testi basari ile tamamlandi");
             else
@@ -170,8 +171,8 @@ namespace SLMP.Test {
             switch (type)
             {
                 case LogType.DEBUG: mrkpStr = "blue"; break;
-                case  LogType.INFO: mrkpStr = "green"; break;
-                case  LogType.WARN: mrkpStr = "yellow"; break;
+                case LogType.INFO: mrkpStr = "green"; break;
+                case LogType.WARN: mrkpStr = "yellow"; break;
                 case LogType.ERROR: mrkpStr = "red"; break;
             }
             string typeStr = type.ToString();
