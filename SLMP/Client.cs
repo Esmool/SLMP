@@ -214,6 +214,15 @@ namespace SLMP
             return string.Join("", charBuffer);
         }
 
+        public T? ReadStruct<T>(WordDevice device, ushort addr) where T : struct
+        {
+            Type structType = typeof(T);
+            ushort[] words = ReadDevice(
+                device, addr, (ushort)Struct.GetStructSize(structType));
+
+            return Struct.FromBytes(structType, words) as T?;
+        }
+
         /// <summary>
         /// Query the connection status.
         /// </summary>
