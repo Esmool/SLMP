@@ -215,6 +215,7 @@ namespace SLMP
         /// *  short: 2 bytes (Int16)
         /// *   uint: 4 bytes (UInt32)
         /// *    int: 4 bytes (Int32)
+        /// * string: arbitrary long, must have an SLMPStringAttribute
         /// </summary>
         /// <typeparam name="T">The `Struct` to read.</typeparam>
         /// <param name="device">The device to read from..</param>
