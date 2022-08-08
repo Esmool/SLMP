@@ -214,6 +214,19 @@ namespace SLMP
             return string.Join("", charBuffer);
         }
 
+        /// <summary>
+        /// Read from a `WordDevice` to create a C# structure.
+        /// The target structure can only contain very primitive data types.
+        /// Supported data types:
+        /// *   bool: 2 bytes, 0 for `False` anything else for `True`
+        /// * ushort: 2 bytes (UInt16)
+        /// *  short: 2 bytes (Int16)
+        /// *   uint: 4 bytes (UInt32)
+        /// *    int: 4 bytes (Int32)
+        /// </summary>
+        /// <typeparam name="T">The `Struct` to read.</typeparam>
+        /// <param name="device">The device to read from..</param>
+        /// <param name="addr">Starting address of the structure data.</param>
         public T? ReadStruct<T>(WordDevice device, ushort addr) where T : struct
         {
             Type structType = typeof(T);
