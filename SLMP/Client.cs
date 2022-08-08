@@ -166,15 +166,15 @@ namespace SLMP
         /// <param name="text">The string to write.</param>
         public void WriteString(WordDevice device, ushort addr, string text)
         {
-            // add a 16 bit `null` terminator
-            text += "\0\0";
-            // if the length of the string isn't
-            // even, add a dummy null (0x00) character
-            if (text.Length % 2 == 1)
+            // add proper padding to the string
+            int padAmount = 2 - (text.Length % 2);
+            for (int i = 0; i < padAmount; i++)
                 text += '\0';
 
             List<ushort> result = new();
 
+            Console.WriteLine(text);
+            Console.WriteLine(text.Length);
             System.Text.Encoding.ASCII.GetBytes(text.ToCharArray())
                 .Chunk(2)
                 .ToList()
@@ -194,10 +194,10 @@ namespace SLMP
         /// <param name="len">Length of the string.</param>
         public string ReadString(WordDevice device, ushort addr, ushort len)
         {
-            ushort word_count = (ushort)((len % 2 == 0 ? len : len + 1) / 2);
+            ushort wordCount = (ushort)((len % 2 == 0 ? len : len + 1) / 2);
             List<char> buffer = new();
 
-            foreach (ushort word in ReadDevice(device, addr, word_count))
+            foreach (ushort word in ReadDevice(device, addr, wordCount))
             {
                 buffer.Add((char)(word & 0xff));
                 buffer.Add((char)(word >> 0x8));
