@@ -48,12 +48,12 @@ namespace SLMP
                             .GetCustomAttributes<SLMPStringAttribute>()
                             .SingleOrDefault();
                         if (attr == default(SLMPStringAttribute))
-                            throw new Exception("please add a SLMPStringAttribute to the string.");
+                            throw new ArgumentException("please add a SLMPStringAttribute to the string.");
 
                         size += attr.wordCount;
                         break;
                     default:
-                        throw new Exception($"unsupported type: {field.FieldType.Name}");
+                        throw new ArgumentException($"unsupported type: {field.FieldType.Name}");
                 }
 
             return size;
@@ -102,7 +102,7 @@ namespace SLMP
                             .GetCustomAttributes<SLMPStringAttribute>()
                             .SingleOrDefault();
                         if (attr == default(SLMPStringAttribute))
-                            throw new Exception("please add a SLMPStringAttribute to the string.");
+                            throw new ArgumentException("please add a SLMPStringAttribute to the string.");
 
                         List<char> buffer = new();
                         for (int i = index; i < index + attr.wordCount; i++)
@@ -116,7 +116,7 @@ namespace SLMP
                         index += attr.wordCount;
                         break;
                     default:
-                        throw new Exception($"unsupported type: {field.FieldType.Name}");
+                        throw new ArgumentException($"unsupported type: {field.FieldType.Name}");
                 }
             }
 
