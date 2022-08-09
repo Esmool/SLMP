@@ -7,13 +7,13 @@ SLMP (a subset of it) client library for C#
 
 ### Reading/writing into registers
 ```C#
-Config plcConfig = new Config()
+Config plcConfig = new Config("192.168.3.201")
     .Port(6000)
     .ConnTimeout(500)
     .RecvTimeout(500)
     .SendTimeout(500);
 Client plcClient = new Client(plcConfig);
-plcClient.Connect("192.168.3.201");
+plcClient.Connect();
 
 // reading form word/bit devices
 var _ = plcClient.ReadDevice(BitDevice.M, 200, 18); // an array of bools starting from 
@@ -47,13 +47,13 @@ public struct ExampleStruct
     public string odd_length_string;
 }
 
-Config plcConfig = new Config()
+Config plcConfig = new Config("192.168.3.201")
     .Port(6000)
     .ConnTimeout(500)
     .RecvTimeout(500)
     .SendTimeout(500);
 Client plcClient = new Client(plcConfig);
-plcClient.Connect("192.168.3.201");
+plcClient.Connect();
 
 var _ = plcClient.ReadStruct<ExampleStruct>(STRUCT_DEVICE, STRUCT_ADDR);
 ```

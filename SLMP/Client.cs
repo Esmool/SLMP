@@ -32,18 +32,17 @@ namespace SLMP
             client = new TcpClient();
         }
 
-        /// <summary>Connects to the specified address.</summary>
-        /// <param name="addr">The addr.</param>
+        /// <summary>Connects to the address specified in the config.</summary>
         /// <exception cref="System.TimeoutException">connection timed out</exception>
-        public void Connect(string addr)
+        public void Connect()
         {
             switch (config.connTimeout)
             {
                 case null:
-                    client.Connect(addr, config.port);
+                    client.Connect(config.addr, config.port);
                     break;
                 default:
-                    if (!client.ConnectAsync(addr, config.port).Wait((int)config.connTimeout))
+                    if (!client.ConnectAsync(config.addr, config.port).Wait((int)config.connTimeout))
                         throw new TimeoutException("connection timed out");
                     break;
             }
