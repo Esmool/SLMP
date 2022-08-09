@@ -15,7 +15,7 @@ namespace SLMP
         private readonly byte[] HEADER = {
             0x50, 0x00,     // subheader: no serial no.
             0x00,           // request destination network no.
-            0xff,           // request deestination station no.
+            0xff,           // request destination station no.
             0xff, 0x03,     // request destination module I/O no.: 0x03ff (own station)
             0x00,           // request destination multidrop station no.
         };
