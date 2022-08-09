@@ -1,7 +1,7 @@
 # SLMP
 SLMP (a subset of it) client library for C#
 
-**WARNING:** Keep in mind, this is my first C# project and despite being a pretty competent programmer, I'm sceptical of the code and my understanding of SLMP. Therefore I'd not advise you to use this library in production without proper testing. I tested this library pretty extensively with an FX5U-32M but there are no unit tests as of now. Use this library at your own risk.
+**WARNING:** Keep in mind, this is my first C# project and despite considering myself as a pretty competent programmer, I'm sceptical of the code and my understanding of SLMP. Therefore I'd not advise you to use this library in production without proper testing. I tested this library pretty extensively with an FX5U-32M but there are no unit tests as of now. Use this library at your own risk.
 
 # Examples
 
