@@ -18,7 +18,7 @@ plcClient.Connect("192.168.3.201");
 // reading form word/bit devices
 var _ = plcClient.ReadDevice(BitDevice.M, 200, 18); // an array of bools starting from 
                                                     // M200 and ending on M217
-var _ = plcClient.ReadDevice(WordDevice.D, 200, 8); // an array of `ushor`s starting from
+var _ = plcClient.ReadDevice(WordDevice.D, 200, 8); // an array of `ushort`s starting from
                                                     // D200 and ending on D207
 
 // reading to word/bit devices
