@@ -34,7 +34,7 @@
         /// <summary>
         /// Set the `connTimeout` to something other than the default value.
         /// </summary>
-        public Config ConnTimeout(int value)
+        public Config ConnTimeout(int? value)
         {
             connTimeout = value;
             return this;
@@ -43,7 +43,7 @@
         /// <summary>
         /// Set the `recvTimeout` to something other than the default value.
         /// </summary>
-        public Config RecvTimeout(int value)
+        public Config RecvTimeout(int? value)
         {
             recvTimeout = value;
             return this;
@@ -52,7 +52,7 @@
         /// <summary>
         /// Set the `sendTimeout` to something other than the default value.
         /// </summary>
-        public Config SendTimeout(int value)
+        public Config SendTimeout(int? value)
         {
             sendTimeout = value;
             return this;

@@ -36,6 +36,8 @@ namespace SLMP
         /// <exception cref="System.TimeoutException">connection timed out</exception>
         public void Connect()
         {
+            client = new TcpClient();
+
             switch (config.connTimeout)
             {
                 case null:
@@ -52,6 +54,11 @@ namespace SLMP
             if (config.recvTimeout != null) client.ReceiveTimeout = (int)config.recvTimeout;
 
             stream = client.GetStream();
+        }
+
+        public void Disconnect()
+        {
+            client.Close();
         }
 
         /// <summary>
@@ -172,8 +179,6 @@ namespace SLMP
 
             List<ushort> result = new();
 
-            Console.WriteLine(text);
-            Console.WriteLine(text.Length);
             System.Text.Encoding.ASCII.GetBytes(text.ToCharArray())
                 .Chunk(2)
                 .ToList()
