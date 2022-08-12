@@ -58,6 +58,11 @@ namespace SLMP
 
         public void Disconnect()
         {
+            if (stream != null)
+            {
+                stream.Close();
+                stream = null;
+            }
             client.Close();
         }
 
@@ -238,6 +243,7 @@ namespace SLMP
         /// </summary>
         public bool Connected()
         {
+            // TODO: replace this with a self-test command
             return stream != null && client.Connected != false;
         }
 
@@ -253,13 +259,12 @@ namespace SLMP
         /// <exception cref="System.ArgumentException">invalid device type provided</exception>
         private static ushort GetSubcommand(dynamic type)
         {
-            switch (type)
+            return type switch
             {
-                case BitDevice d: return 0x0001;
-                case WordDevice d: return 0x0000;
-                default:
-                    throw new ArgumentException("invalid device type provided");
-            }
+                BitDevice => 0x0001,
+                WordDevice => 0x0000,
+                _ => throw new ArgumentException("invalid device type provided"),
+            };
         }
 
         /// <summary>This function exists because `NetworkStream` doesn't have a `recv_exact` method.</summary>
