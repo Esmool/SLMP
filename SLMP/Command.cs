@@ -5,8 +5,9 @@
     /// </summary>
     public enum Command
     {
-        DeviceRead  = 0x0401,
+        DeviceRead = 0x0401,
         DeviceWrite = 0x1401,
-        ClearError  = 0x1617,
+        ClearError = 0x1617,
+        SelfTest = 0x0619,
     }
 }

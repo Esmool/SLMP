@@ -238,13 +238,21 @@ namespace SLMP
             return Struct.FromBytes(structType, words) as T?;
         }
 
+        public bool SelfTest()
+        {
+            SendSelfTestCommand();
+            List<byte> response = ReceiveResponse();
+
+            return response.Count == 6 &&
+                   response.SequenceEqual(new byte[] { 0x04, 0x00, 0xde, 0xad, 0xbe, 0xef });
+        }
+
         /// <summary>
         /// Query the connection status.
         /// </summary>
         public bool Connected()
         {
-            // TODO: replace this with a self-test command
-            return stream != null && client.Connected != false;
+            return stream != null && client.Connected;
         }
 
         private void CheckConnection()
@@ -397,6 +405,26 @@ namespace SLMP
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
             stream.Write(rawRequest.ToArray());
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
+        }
+
+        private void SendSelfTestCommand()
+        {
+            List<byte> rawRequest = HEADER.ToList();
+            ushort cmd = (ushort)Command.SelfTest;
+            ushort sub = 0x0000;
+
+            rawRequest.AddRange(new byte[]{
+                // request data length (in terms of bytes): fixed size (12) for the read command
+                0x0c, 0x00,
+                // monitoring timer. TODO: make this something configurable instead of hard-coding it.
+                0x00, 0x00,
+                (byte)(cmd & 0xff), (byte)(cmd >> 0x8),
+                (byte)(sub & 0xff), (byte)(sub >> 0x8),
+                0x04, 0x00,
+                0xde, 0xad, 0xbe, 0xef
+            });
+
+            stream.Write(rawRequest.ToArray());
         }
     }
 }
