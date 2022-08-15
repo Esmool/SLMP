@@ -63,6 +63,8 @@ namespace SLMP
                 stream.Close();
                 stream = null;
             }
+            if (client.Connected)
+                client.Client.Shutdown(SocketShutdown.Both);
             client.Close();
         }
 
@@ -240,11 +242,18 @@ namespace SLMP
 
         public bool SelfTest()
         {
-            SendSelfTestCommand();
-            List<byte> response = ReceiveResponse();
+            try
+            {
+                SendSelfTestCommand();
+                List<byte> response = ReceiveResponse();
 
-            return response.Count == 6 &&
-                   response.SequenceEqual(new byte[] { 0x04, 0x00, 0xde, 0xad, 0xbe, 0xef });
+                return response.Count == 6 &&
+                       response.SequenceEqual(new byte[] { 0x04, 0x00, 0xde, 0xad, 0xbe, 0xef });
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
