@@ -5,11 +5,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SLMP
-{
+namespace SLMP {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    public class SLMPStringAttribute : Attribute
-    {
+    public class SLMPStringAttribute : Attribute {
         public int length;
         public int wordCount => length % 2 == 0 ? length / 2 + 1 : (length + 1) / 2;
     }
@@ -17,8 +15,7 @@ namespace SLMP
     /// <summary>
     /// Functionality related to encoding/decoding struct.
     /// </summary>
-    public static class Struct
-    {
+    public static class Struct {
         /// <summary>
         /// This function returns the size of the struct in terms of 
         /// device words. (16 bit values)
@@ -26,14 +23,12 @@ namespace SLMP
         /// Int32, UInt32 size: 2 word (4 bytes)
         /// </summary>
         /// <param name="structType">Type of the structure.</param>
-        public static int GetStructSize(Type structType)
-        {
+        public static int GetStructSize(Type structType) {
             int size = 0;
             var fieldTypes = structType.GetFields();
 
             foreach (var field in fieldTypes)
-                switch (field.FieldType.Name)
-                {
+                switch (field.FieldType.Name) {
                     case "Int16":
                     case "UInt16":
                     case "Boolean":
@@ -59,8 +54,7 @@ namespace SLMP
             return size;
         }
 
-        public static object? FromBytes(Type structType, ushort[] words)
-        {
+        public static object? FromBytes(Type structType, ushort[] words) {
             if (words == null || words.Length != GetStructSize(structType))
                 return null;
 
@@ -71,10 +65,8 @@ namespace SLMP
             int index = 0;
             var fields = structType.GetFields();
 
-            foreach (var field in fields)
-            {
-                switch (field.FieldType.Name)
-                {
+            foreach (var field in fields) {
+                switch (field.FieldType.Name) {
                     case "Int16":
                         field.SetValue(structObject, (Int16)words[index]);
                         index++;
@@ -105,8 +97,7 @@ namespace SLMP
                             throw new ArgumentException("please add a SLMPStringAttribute to the string.");
 
                         List<char> buffer = new();
-                        for (int i = index; i < index + attr.wordCount; i++)
-                        {
+                        for (int i = index; i < index + attr.wordCount; i++) {
                             ushort word = words[i];
                             buffer.Add((char)(word & 0xff));
                             buffer.Add((char)(word >> 0x8));

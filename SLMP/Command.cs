@@ -1,10 +1,8 @@
-﻿namespace SLMP
-{
+﻿namespace SLMP {
     /// <summary>
     /// This enum encodes the supported SLMP commands within this library.
     /// </summary>
-    public enum Command
-    {
+    public enum Command {
         DeviceRead = 0x0401,
         DeviceWrite = 0x1401,
         ClearError = 0x1617,

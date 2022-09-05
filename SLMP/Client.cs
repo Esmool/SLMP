@@ -1,13 +1,11 @@
 ﻿using System.Net.Sockets;
 
-namespace SLMP
-{
+namespace SLMP {
     /// <summary>
     /// This class exposes functionality to connect and manage
     /// SLMP-compatible devices.
     /// </summary>
-    public class Client
-    {
+    public class Client {
         /// <summary>
         /// This `HEADER` array contains the shared (header) data between
         /// commands that are supported in this library.
@@ -26,20 +24,17 @@ namespace SLMP
 
         /// <summary>Initializes a new instance of the <see cref="Client" /> class.</summary>
         /// <param name="cfg">The config.</param>
-        public Client(Config cfg)
-        {
+        public Client(Config cfg) {
             config = cfg;
             client = new TcpClient();
         }
 
         /// <summary>Connects to the address specified in the config.</summary>
         /// <exception cref="System.TimeoutException">connection timed out</exception>
-        public void Connect()
-        {
+        public void Connect() {
             client = new TcpClient();
 
-            switch (config.connTimeout)
-            {
+            switch (config.connTimeout) {
                 case null:
                     client.Connect(config.addr, config.port);
                     break;
@@ -56,10 +51,8 @@ namespace SLMP
             stream = client.GetStream();
         }
 
-        public void Disconnect()
-        {
-            if (stream != null)
-            {
+        public void Disconnect() {
+            if (stream != null) {
                 stream.Close();
                 stream = null;
             }
@@ -75,14 +68,12 @@ namespace SLMP
         /// <param name="device">The bit device.</param>
         /// <param name="addr">Start address.</param>
         /// <param name="count">Number of registers to read.</param>
-        public bool[] ReadDevice(BitDevice device, ushort addr, ushort count)
-        {
+        public bool[] ReadDevice(BitDevice device, ushort addr, ushort count) {
             SendReadDeviceCommand(device, addr, count);
             List<byte> response = ReceiveResponse();
             List<bool> result = new();
 
-            response.ForEach(delegate (byte a)
-            {
+            response.ForEach(delegate (byte a) {
                 result.Add((a & 0x10) != 0);
                 result.Add((a & 0x01) != 0);
             });
@@ -97,8 +88,7 @@ namespace SLMP
         /// <param name="device">The word device.</param>
         /// <param name="addr">Start address.</param>
         /// <param name="count">Number of registers to read.</param>
-        public ushort[] ReadDevice(WordDevice device, ushort addr, ushort count)
-        {
+        public ushort[] ReadDevice(WordDevice device, ushort addr, ushort count) {
             SendReadDeviceCommand(device, addr, count);
             List<byte> response = ReceiveResponse();
             List<ushort> result = new();
@@ -127,8 +117,7 @@ namespace SLMP
         /// <param name="device">The BitDevice to write.</param>
         /// <param name="addr">Starting address.</param>
         /// <param name="data">Data to be written into the remote device.</param>
-        public void WriteDevice(BitDevice device, ushort addr, bool[] data)
-        {
+        public void WriteDevice(BitDevice device, ushort addr, bool[] data) {
             ushort count = (ushort)data.Length;
             List<bool> listData = data.ToList();
             List<byte> encodedData = new();
@@ -155,13 +144,11 @@ namespace SLMP
         /// <param name="device">The WordDevice to write.</param>
         /// <param name="addr">Starting address.</param>
         /// <param name="data">Data to be written into the remote device.</param>
-        public void WriteDevice(WordDevice device, ushort addr, ushort[] data)
-        {
+        public void WriteDevice(WordDevice device, ushort addr, ushort[] data) {
             ushort count = (ushort)data.Length;
             List<byte> encodedData = new();
 
-            foreach (ushort word in data)
-            {
+            foreach (ushort word in data) {
                 encodedData.Add((byte)(word & 0xff));
                 encodedData.Add((byte)(word >> 0x8));
             }
@@ -177,8 +164,7 @@ namespace SLMP
         /// <param name="device">The device.</param>
         /// <param name="addr">Starting address.</param>
         /// <param name="text">The string to write.</param>
-        public void WriteString(WordDevice device, ushort addr, string text)
-        {
+        public void WriteString(WordDevice device, ushort addr, string text) {
             // add proper padding to the string
             int padAmount = 2 - (text.Length % 2);
             for (int i = 0; i < padAmount; i++)
@@ -203,13 +189,11 @@ namespace SLMP
         /// <param name="device">The device.</param>
         /// <param name="addr">Starting address of the null terminated string.</param>
         /// <param name="len">Length of the string.</param>
-        public string ReadString(WordDevice device, ushort addr, ushort len)
-        {
+        public string ReadString(WordDevice device, ushort addr, ushort len) {
             ushort wordCount = (ushort)((len % 2 == 0 ? len : len + 1) / 2);
             List<char> buffer = new();
 
-            foreach (ushort word in ReadDevice(device, addr, wordCount))
-            {
+            foreach (ushort word in ReadDevice(device, addr, wordCount)) {
                 buffer.Add((char)(word & 0xff));
                 buffer.Add((char)(word >> 0x8));
             }
@@ -231,8 +215,7 @@ namespace SLMP
         /// <typeparam name="T">The `Struct` to read.</typeparam>
         /// <param name="device">The device to read from..</param>
         /// <param name="addr">Starting address of the structure data.</param>
-        public T? ReadStruct<T>(WordDevice device, ushort addr) where T : struct
-        {
+        public T? ReadStruct<T>(WordDevice device, ushort addr) where T : struct {
             Type structType = typeof(T);
             ushort[] words = ReadDevice(
                 device, addr, (ushort)Struct.GetStructSize(structType));
@@ -240,18 +223,14 @@ namespace SLMP
             return Struct.FromBytes(structType, words) as T?;
         }
 
-        public bool SelfTest()
-        {
-            try
-            {
+        public bool SelfTest() {
+            try {
                 SendSelfTestCommand();
                 List<byte> response = ReceiveResponse();
 
                 return response.Count == 6 &&
                        response.SequenceEqual(new byte[] { 0x04, 0x00, 0xde, 0xad, 0xbe, 0xef });
-            }
-            catch
-            {
+            } catch {
                 return false;
             }
         }
@@ -259,13 +238,11 @@ namespace SLMP
         /// <summary>
         /// Query the connection status.
         /// </summary>
-        public bool Connected()
-        {
+        public bool Connected() {
             return stream != null && client.Connected;
         }
 
-        private void CheckConnection()
-        {
+        private void CheckConnection() {
             if (!Connected())
                 throw new NotConnectedException();
         }
@@ -274,10 +251,8 @@ namespace SLMP
         /// Gets the subcommand for a given `(Bit/Word)Device`.
         /// </summary>
         /// <exception cref="System.ArgumentException">invalid device type provided</exception>
-        private static ushort GetSubcommand(dynamic type)
-        {
-            return type switch
-            {
+        private static ushort GetSubcommand(dynamic type) {
+            return type switch {
                 BitDevice => 0x0001,
                 WordDevice => 0x0000,
                 _ => throw new ArgumentException("invalid device type provided"),
@@ -286,8 +261,7 @@ namespace SLMP
 
         /// <summary>This function exists because `NetworkStream` doesn't have a `recv_exact` method.</summary>
         /// <param name="count">Number of bytes to receive.</param>
-        private byte[] ReceiveBytes(int count)
-        {
+        private byte[] ReceiveBytes(int count) {
             CheckConnection();
 
             int offset = 0, toRead = count;
@@ -295,8 +269,7 @@ namespace SLMP
             byte[] buffer = new byte[count];
 
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-            while (toRead > 0 && (read = stream.Read(buffer, offset, toRead)) > 0)
-            {
+            while (toRead > 0 && (read = stream.Read(buffer, offset, toRead)) > 0) {
                 toRead -= read;
                 offset += read;
             }
@@ -308,8 +281,7 @@ namespace SLMP
 
         /// <summary>Receives the response and returns the raw response data.</summary>
         /// <returns>Raw response data</returns>
-        private List<byte> ReceiveResponse()
-        {
+        private List<byte> ReceiveResponse() {
             CheckConnection();
 
             // read a single byte to determine
@@ -318,8 +290,7 @@ namespace SLMP
             int value = stream.ReadByte();
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
             byte[] hdrBuf;
-            switch (value)
-            {
+            switch (value) {
                 // if value is 0xd0, there's no serial no. included
                 // in the response
                 case 0xd0:
@@ -353,8 +324,7 @@ namespace SLMP
         /// <param name="device">The target device.</param>
         /// <param name="adr">The address</param>
         /// <param name="cnt">The count.</param>
-        private void SendReadDeviceCommand(dynamic device, ushort adr, ushort cnt)
-        {
+        private void SendReadDeviceCommand(dynamic device, ushort adr, ushort cnt) {
             CheckConnection();
 
             List<byte> rawRequest = HEADER.ToList();
@@ -387,8 +357,7 @@ namespace SLMP
         /// <param name="adr">The address.</param>
         /// <param name="cnt">Number of data points.</param>
         /// <param name="data">Data itself.</param>
-        private void SendWriteDeviceCommand(dynamic device, ushort adr, ushort cnt, byte[] data)
-        {
+        private void SendWriteDeviceCommand(dynamic device, ushort adr, ushort cnt, byte[] data) {
             CheckConnection();
 
             List<byte> rawRequest = HEADER.ToList();
@@ -416,8 +385,7 @@ namespace SLMP
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
 
-        private void SendSelfTestCommand()
-        {
+        private void SendSelfTestCommand() {
             List<byte> rawRequest = HEADER.ToList();
             ushort cmd = (ushort)Command.SelfTest;
             ushort sub = 0x0000;

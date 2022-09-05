@@ -1,10 +1,8 @@
-﻿namespace SLMP
-{
+﻿namespace SLMP {
     /// <summary>
     /// This enum encodes the supported word devices that is available to operate on.
     /// </summary>
-    public enum WordDevice
-    {
+    public enum WordDevice {
         D = 0xa8,
         W = 0xb4,
         R = 0xaf,
@@ -15,8 +13,7 @@
     /// <summary>
     /// This enum encodes the supported bit devices that is available to operate on.
     /// </summary>
-    public enum BitDevice
-    {
+    public enum BitDevice {
         X = 0x9c,
         Y = 0x9d,
         M = 0x90,
@@ -24,12 +21,9 @@
         SM = 0x91,
     }
 
-    public class DeviceMethods
-    {
-        public static bool FromString(string device, out WordDevice? value)
-        {
-            switch (device)
-            {
+    public class DeviceMethods {
+        public static bool FromString(string device, out WordDevice? value) {
+            switch (device) {
                 case "D": value = WordDevice.D; break;
                 case "W": value = WordDevice.W; break;
                 case "R": value = WordDevice.R; break;
@@ -43,10 +37,8 @@
             return true;
         }
 
-        public static bool FromString(string device, out BitDevice? value)
-        {
-            switch (device)
-            {
+        public static bool FromString(string device, out BitDevice? value) {
+            switch (device) {
                 case "X": value = BitDevice.X; break;
                 case "Y": value = BitDevice.Y; break;
                 case "M": value = BitDevice.M; break;

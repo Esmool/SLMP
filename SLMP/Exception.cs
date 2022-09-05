@@ -4,18 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SLMP
-{
+namespace SLMP {
     /// <summary>
     /// This exception is thrown in the case where `send` and `recv` data
     /// functions are called but there's no valid connection to operate on.
     /// </summary>
     /// <seealso cref="System.Exception" />
-    public class NotConnectedException : Exception
-    {
+    public class NotConnectedException : Exception {
         public NotConnectedException()
-            : base("not connected to a server")
-        { }
+            : base("not connected to a server") { }
     }
 
     /// <summary>
@@ -23,11 +20,9 @@ namespace SLMP
     /// to process invalid data.
     /// </summary>
     /// <seealso cref="System.Exception" />
-    public class InvalidDataException : Exception
-    {
+    public class InvalidDataException : Exception {
         public InvalidDataException(string message)
-            : base(message)
-        { }
+            : base(message) { }
     }
 
     /// <summary>
@@ -35,12 +30,10 @@ namespace SLMP
     /// inspection of the error happened in the server (PLC/SLMP-compatible device) side.
     /// </summary>
     /// <seealso cref="System.Exception" />
-    public class SLMPException : Exception
-    {
+    public class SLMPException : Exception {
         public int SLMPEndCode;
         public SLMPException(int endCode)
-            : base($"Received non-zero SLMP EndCode: {endCode:X4}H")
-        {
+            : base($"Received non-zero SLMP EndCode: {endCode:X4}H") {
             SLMPEndCode = endCode;
         }
     }
