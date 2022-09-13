@@ -5,7 +5,7 @@ namespace SLMP {
     /// This class exposes functionality to connect and manage
     /// SLMP-compatible devices.
     /// </summary>
-    public class Client {
+    public class SlmpClient {
         /// <summary>
         /// This `HEADER` array contains the shared (header) data between
         /// commands that are supported in this library.
@@ -18,13 +18,13 @@ namespace SLMP {
             0x00,           // request destination multidrop station no.
         };
 
-        private Config config;
+        private SlmpConfig config;
         private TcpClient client;
         private NetworkStream? stream;
 
-        /// <summary>Initializes a new instance of the <see cref="Client" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SlmpClient" /> class.</summary>
         /// <param name="cfg">The config.</param>
-        public Client(Config cfg) {
+        public SlmpClient(SlmpConfig cfg) {
             config = cfg;
             client = new TcpClient();
         }
@@ -34,19 +34,12 @@ namespace SLMP {
         public void Connect() {
             client = new TcpClient();
 
-            switch (config.connTimeout) {
-                case null:
-                    client.Connect(config.addr, config.port);
-                    break;
-                default:
-                    if (!client.ConnectAsync(config.addr, config.port).Wait((int)config.connTimeout))
-                        throw new TimeoutException("connection timed out");
-                    break;
-            }
+            if (!client.ConnectAsync(config.Address, config.Port).Wait(config.ConnTimeout))
+                throw new TimeoutException("connection timed out");
 
             // connection is successful
-            if (config.sendTimeout != null) client.SendTimeout = (int)config.sendTimeout;
-            if (config.recvTimeout != null) client.ReceiveTimeout = (int)config.recvTimeout;
+            client.SendTimeout = config.SendTimeout;
+            client.ReceiveTimeout = config.RecvTimeout;
 
             stream = client.GetStream();
         }
@@ -166,10 +159,7 @@ namespace SLMP {
         /// <param name="text">The string to write.</param>
         public void WriteString(WordDevice device, ushort addr, string text) {
             // add proper padding to the string
-            int padAmount = 2 - (text.Length % 2);
-            for (int i = 0; i < padAmount; i++)
-                text += '\0';
-
+            text += new string('\0', 2 - (text.Length % 2));
             List<ushort> result = new();
 
             System.Text.Encoding.ASCII.GetBytes(text.ToCharArray())
@@ -340,7 +330,7 @@ namespace SLMP {
                 (byte)(cmd & 0xff), (byte)(cmd >> 0x8),
                 (byte)(sub & 0xff), (byte)(sub >> 0x8),
                 (byte)(adr & 0xff), (byte)(adr >> 0x8),
-                (byte)(0x00),
+                0x00,
                 (byte)device,
                 (byte)(cnt & 0xff), (byte)(cnt >> 0x8),
             });
@@ -374,7 +364,7 @@ namespace SLMP {
                 (byte)(cmd & 0xff), (byte)(cmd >> 0x8),
                 (byte)(sub & 0xff), (byte)(sub >> 0x8),
                 (byte)(adr & 0xff), (byte)(adr >> 0x8),
-                (byte)(0x00),
+                0x00,
                 (byte)device,
                 (byte)(cnt & 0xff), (byte)(cnt >> 0x8),
             });
@@ -401,7 +391,9 @@ namespace SLMP {
                 0xde, 0xad, 0xbe, 0xef
             });
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             stream.Write(rawRequest.ToArray());
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
     }
 }
