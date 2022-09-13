@@ -55,6 +55,15 @@ namespace SLMP {
         }
 
         /// <summary>
+        /// Reads a single Bit from a given `BitDevice` and returns a `bool`.
+        /// </summary>
+        /// <param name="device">The word device.</param>
+        /// <param name="addr">Bit address.</param>
+        public bool ReadDevice(BitDevice device, ushort addr) {
+            return ReadDevice(device, addr, 1)[0];
+        }
+
+        /// <summary>
         /// Reads from a given `BitDevice` and returns an array of `bool`s.
         /// Note that there's a limit on how many registers can be read at a time.
         /// </summary>
@@ -72,6 +81,15 @@ namespace SLMP {
             });
 
             return result.GetRange(0, count).ToArray();
+        }
+
+        /// <summary>
+        /// Reads a single Word from a the given `WordDevice` and returns an `ushort`.
+        /// </summary>
+        /// <param name="device">The word device.</param>
+        /// <param name="addr">Word address.</param>
+        public ushort ReadDevice(WordDevice device, ushort addr) {
+            return ReadDevice(device, addr, 1)[0];
         }
 
         /// <summary>
@@ -104,6 +122,16 @@ namespace SLMP {
         }
 
         /// <summary>
+        /// Writes a single `Bit` to a given `BitDevice`.
+        /// </summary>
+        /// <param name="device">The WordDevice to write.</param>
+        /// <param name="addr">Address.</param>
+        /// <param name="data">Data to be written into the remote device.</param>
+        public void WriteDevice(BitDevice device, ushort addr, bool data) {
+            WriteDevice(device, addr, new bool[] { data });
+        }
+
+        /// <summary>
         /// Writes an array of `bool`s to a given `BitDevice`.
         /// Note that there's a limit on how many registers can be written at a time.
         /// </summary>
@@ -128,6 +156,16 @@ namespace SLMP {
 
             SendWriteDeviceCommand(device, addr, count, encodedData.ToArray());
             ReceiveResponse();
+        }
+
+        /// <summary>
+        /// Writes a single `ushort` to a given `WordDevice`.
+        /// </summary>
+        /// <param name="device">The WordDevice to write.</param>
+        /// <param name="addr">Address.</param>
+        /// <param name="data">Data to be written into the remote device.</param>
+        public void WriteDevice(WordDevice device, ushort addr, ushort data) {
+            WriteDevice(device, addr, new ushort[] { data });
         }
 
         /// <summary>
@@ -195,12 +233,12 @@ namespace SLMP {
         /// Read from a `WordDevice` to create a C# structure.
         /// The target structure can only contain very primitive data types.
         /// Supported data types:
-        /// *   bool: 2 bytes, 0 for `False` anything else for `True`
-        /// * ushort: 2 bytes (UInt16)
-        /// *  short: 2 bytes (Int16)
-        /// *   uint: 4 bytes (UInt32)
-        /// *    int: 4 bytes (Int32)
-        /// * string: arbitrary long, must have an SLMPStringAttribute
+        ///    bool: 2 bytes, 0 for `False` anything else for `True`
+        ///  ushort: 2 bytes (UInt16)
+        ///   short: 2 bytes (Int16)
+        ///    uint: 4 bytes (UInt32)
+        ///     int: 4 bytes (Int32)
+        ///  string: arbitrary long, must have an `SLMPStringAttribute`
         /// </summary>
         /// <typeparam name="T">The `Struct` to read.</typeparam>
         /// <param name="device">The device to read from..</param>
