@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("dev",["Class"],[["DeviceMethods",,[["SLMP",,,,0,"File:Device.cs:SLMP.DeviceMethods","CSharpClass:SLMP.DeviceMethods"]]]]);

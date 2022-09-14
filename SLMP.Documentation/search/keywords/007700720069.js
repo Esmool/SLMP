@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("wri",["Function"],[["WriteDevice",,[["SLMP.SlmpClient",,,,0,"File:SlmpClient.cs:SLMP.SlmpClient.WriteDevice","CSharpClass:SLMP.SlmpClient:WriteDevice"]]],["WriteString",,[["SLMP.SlmpClient",,,,0,"File:SlmpClient.cs:SLMP.SlmpClient.WriteString","CSharpClass:SLMP.SlmpClient:WriteString"]]]]);

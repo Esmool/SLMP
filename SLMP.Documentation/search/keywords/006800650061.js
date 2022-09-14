@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("hea",["Variable"],[["HEADER",,[["SLMP.SlmpClient",,,,0,"File:SlmpClient.cs:SLMP.SlmpClient.HEADER","CSharpClass:SLMP.SlmpClient:HEADER"]]]]);

@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("CSharpClass:SLMP.Struct","Struct");NDSummary.OnSummaryLoaded("CSharpClass:SLMP.Struct",[["C#","CSharp"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[63,0,0,"<span class=\"Qualifier\">SLMP.</span>&#8203;Struct"],[64,0,2,"Functions","Functions"],[65,0,1,"GetStructSize","GetStructSize"],[66,0,1,"FromBytes","FromBytes"]]);

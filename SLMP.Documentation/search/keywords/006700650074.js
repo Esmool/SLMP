@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("get",["Function"],[["GetStructSize",,[["SLMP.Struct",,,,0,"File:Struct.cs:SLMP.Struct.GetStructSize","CSharpClass:SLMP.Struct:GetStructSize"]]],["GetSubcommand",,[["SLMP.SlmpClient",,,,0,"File:SlmpClient.cs:SLMP.SlmpClient.GetSubcommand","CSharpClass:SLMP.SlmpClient:GetSubcommand"]]]]);

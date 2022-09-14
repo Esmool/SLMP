@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("fro",["Function"],[["FromBytes",,[["SLMP.Struct",,,,0,"File:Struct.cs:SLMP.Struct.FromBytes","CSharpClass:SLMP.Struct:FromBytes"]]],["FromString",,[["SLMP.DeviceMethods",,,,0,"File:Device.cs:SLMP.DeviceMethods.FromString","CSharpClass:SLMP.DeviceMethods:FromString"]]]]);
