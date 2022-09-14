@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("_co",["Variable"],[["_config",,[["SLMP.SlmpClient",,,,0,"File:SlmpClient.cs:SLMP.SlmpClient._config","CSharpClass:SLMP.SlmpClient:_config"]]]]);

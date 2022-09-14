@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("str",["Variable","Class"],[["stream",,[["SLMP.SlmpClient",,,,0,"File:SlmpClient.cs:SLMP.SlmpClient.stream","CSharpClass:SLMP.SlmpClient:stream"]]],["Struct",,[["SLMP",,,,1,"File:Struct.cs:SLMP.Struct","CSharpClass:SLMP.Struct"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("str",["Class"],[["Struct",,[["SLMP",,,,0,"File:Struct.cs:SLMP.Struct","CSharpClass:SLMP.Struct"]]]]);

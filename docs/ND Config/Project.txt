@@ -68,7 +68,7 @@ Title: SLMP
 # Source Code
 # ------------------------------------------------------------------------
 
-Source Folder: ../../SLMP
+Source Folder: ../../src
 
 
 # This is where you tell Natural Docs which folders it should scan for source
