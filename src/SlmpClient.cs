@@ -18,40 +18,44 @@ namespace SLMP {
             0x00,           // request destination multidrop station no.
         };
 
-        private SlmpConfig config;
-        private TcpClient client;
-        private NetworkStream? stream;
+        private SlmpConfig _config;
+        private TcpClient _client;
+        private NetworkStream? _stream;
 
         /// <summary>Initializes a new instance of the <see cref="SlmpClient" /> class.</summary>
         /// <param name="cfg">The config.</param>
         public SlmpClient(SlmpConfig cfg) {
-            config = cfg;
-            client = new TcpClient();
+            _config = cfg;
+            _client = new TcpClient();
         }
 
+        // TODO: reveise `Connect` and `Disconnect` functions
         /// <summary>Connects to the address specified in the config.</summary>
         /// <exception cref="System.TimeoutException">connection timed out</exception>
         public void Connect() {
-            client = new TcpClient();
+            _client = new TcpClient();
 
-            if (!client.ConnectAsync(config.Address, config.Port).Wait(config.ConnTimeout))
+            if (!_client.ConnectAsync(_config.Address, _config.Port).Wait(_config.ConnTimeout))
                 throw new TimeoutException("connection timed out");
 
             // connection is successful
-            client.SendTimeout = config.SendTimeout;
-            client.ReceiveTimeout = config.RecvTimeout;
+            _client.SendTimeout = _config.SendTimeout;
+            _client.ReceiveTimeout = _config.RecvTimeout;
 
-            stream = client.GetStream();
+            _stream = _client.GetStream();
         }
 
+        /// <summary>
+        /// Attempt to close the socket connection.
+        /// </summary>
         public void Disconnect() {
-            if (stream != null) {
-                stream.Close();
-                stream = null;
+            if (_stream != null) {
+                _stream.Close();
+                _stream = null;
             }
-            if (client.Connected)
-                client.Client.Shutdown(SocketShutdown.Both);
-            client.Close();
+            if (_client.Connected)
+                _client.Client.Shutdown(SocketShutdown.Both);
+            _client.Close();
         }
 
         /// <summary>
@@ -232,13 +236,6 @@ namespace SLMP {
         /// <summary>
         /// Read from a `WordDevice` to create a C# structure.
         /// The target structure can only contain very primitive data types.
-        /// Supported data types:
-        ///    bool: 2 bytes, 0 for `False` anything else for `True`
-        ///  ushort: 2 bytes (UInt16)
-        ///   short: 2 bytes (Int16)
-        ///    uint: 4 bytes (UInt32)
-        ///     int: 4 bytes (Int32)
-        ///  string: arbitrary long, must have an `SLMPStringAttribute`
         /// </summary>
         /// <typeparam name="T">The `Struct` to read.</typeparam>
         /// <param name="device">The device to read from..</param>
@@ -248,7 +245,7 @@ namespace SLMP {
             ushort[] words = ReadDevice(
                 device, addr, (ushort)Struct.GetStructSize(structType));
 
-            return Struct.FromBytes(structType, words) as T?;
+            return Struct.FromWords(structType, words) as T?;
         }
 
         public bool SelfTest() {
@@ -267,7 +264,7 @@ namespace SLMP {
         /// Query the connection status.
         /// </summary>
         public bool Connected() {
-            return stream != null && client.Connected;
+            return _stream != null && _client.Connected;
         }
 
         private void CheckConnection() {
@@ -275,6 +272,7 @@ namespace SLMP {
                 throw new NotConnectedException();
         }
 
+        // TODO: refactor this
         /// <summary>
         /// Gets the subcommand for a given `(Bit/Word)Device`.
         /// </summary>
@@ -297,7 +295,7 @@ namespace SLMP {
             byte[] buffer = new byte[count];
 
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-            while (toRead > 0 && (read = stream.Read(buffer, offset, toRead)) > 0) {
+            while (toRead > 0 && (read = _stream.Read(buffer, offset, toRead)) > 0) {
                 toRead -= read;
                 offset += read;
             }
@@ -315,7 +313,7 @@ namespace SLMP {
             // read a single byte to determine
             // if a serial no. is included or not
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-            int value = stream.ReadByte();
+            int value = _stream.ReadByte();
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
             byte[] hdrBuf;
             switch (value) {
@@ -374,7 +372,7 @@ namespace SLMP {
             });
 
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-            stream.Write(rawRequest.ToArray());
+            _stream.Write(rawRequest.ToArray());
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
 
@@ -409,11 +407,19 @@ namespace SLMP {
             rawRequest.AddRange(data);
 
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-            stream.Write(rawRequest.ToArray());
+            _stream.Write(rawRequest.ToArray());
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
 
+        /// <summary>
+        /// Sends the `SelfTest` command.
+        /// </summary>
         private void SendSelfTestCommand() {
+            // We don't check the connection on purpose since
+            // this function is meant to be internal and a part of `CheckConnection`.
+            // If we do call it, it will result in a stack overflow.
+            // CheckConnection();
+
             List<byte> rawRequest = HEADER.ToList();
             ushort cmd = (ushort)Command.SelfTest;
             ushort sub = 0x0000;
@@ -430,7 +436,7 @@ namespace SLMP {
             });
 
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-            stream.Write(rawRequest.ToArray());
+            _stream.Write(rawRequest.ToArray());
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
     }

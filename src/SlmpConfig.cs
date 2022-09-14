@@ -10,5 +10,10 @@
         public int ConnTimeout { get; set; } = 1000;
         public int RecvTimeout { get; set; } = 1000;
         public int SendTimeout { get; set; } = 1000;
+
+        public SlmpConfig(string address, int port) {
+            Address = address;
+            Port = port;
+        }
     }
 }

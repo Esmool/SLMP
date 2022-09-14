@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SLMP {
+﻿namespace SLMP {
     /// <summary>
     /// This exception is thrown in the case where `send` and `recv` data
     /// functions are called but there's no valid connection to operate on.
