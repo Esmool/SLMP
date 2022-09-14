@@ -11,9 +11,7 @@ This project implements a client library that supports a subset of the functiona
 
 ### Connecting to and Disconnecting from an SLMP Server
 ```C#
-SlmpConfig cfg = new SlmpConfig() {
-    Address = "192.168.3.39",
-    Port = 6000,
+SlmpConfig cfg = new SlmpConfig("192.168.3.39", 6000) {
     ConnTimeout = 1000,
     RecvTimeout = 1000,
     SendTimeout = 1000,
