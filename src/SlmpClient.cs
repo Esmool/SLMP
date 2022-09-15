@@ -63,8 +63,8 @@ namespace SLMP {
         /// </summary>
         /// <param name="device">The word device.</param>
         /// <param name="addr">Bit address.</param>
-        public bool ReadDevice(BitDevice device, ushort addr) {
-            return ReadDevice(device, addr, 1)[0];
+        public bool ReadBitDevice(Device device, ushort addr) {
+            return ReadBitDevice(device, addr, 1)[0];
         }
 
         /// <summary>
@@ -74,7 +74,10 @@ namespace SLMP {
         /// <param name="device">The bit device.</param>
         /// <param name="addr">Start address.</param>
         /// <param name="count">Number of registers to read.</param>
-        public bool[] ReadDevice(BitDevice device, ushort addr, ushort count) {
+        public bool[] ReadBitDevice(Device device, ushort addr, ushort count) {
+            if (DeviceMethods.GetDeviceType(device) != DeviceType.Bit)
+                throw new ArgumentException("provided device is not a bit device");
+
             SendReadDeviceCommand(device, addr, count);
             List<byte> response = ReceiveResponse();
             List<bool> result = new();
@@ -92,8 +95,8 @@ namespace SLMP {
         /// </summary>
         /// <param name="device">The word device.</param>
         /// <param name="addr">Word address.</param>
-        public ushort ReadDevice(WordDevice device, ushort addr) {
-            return ReadDevice(device, addr, 1)[0];
+        public ushort ReadWordDevice(Device device, ushort addr) {
+            return ReadWordDevice(device, addr, 1)[0];
         }
 
         /// <summary>
@@ -103,7 +106,10 @@ namespace SLMP {
         /// <param name="device">The word device.</param>
         /// <param name="addr">Start address.</param>
         /// <param name="count">Number of registers to read.</param>
-        public ushort[] ReadDevice(WordDevice device, ushort addr, ushort count) {
+        public ushort[] ReadWordDevice(Device device, ushort addr, ushort count) {
+            if (DeviceMethods.GetDeviceType(device) != DeviceType.Word)
+                throw new ArgumentException("provided device is not a word device");
+
             SendReadDeviceCommand(device, addr, count);
             List<byte> response = ReceiveResponse();
             List<ushort> result = new();
@@ -131,8 +137,8 @@ namespace SLMP {
         /// <param name="device">The WordDevice to write.</param>
         /// <param name="addr">Address.</param>
         /// <param name="data">Data to be written into the remote device.</param>
-        public void WriteDevice(BitDevice device, ushort addr, bool data) {
-            WriteDevice(device, addr, new bool[] { data });
+        public void WriteBitDevice(Device device, ushort addr, bool data) {
+            WriteBitDevice(device, addr, new bool[] { data });
         }
 
         /// <summary>
@@ -142,7 +148,10 @@ namespace SLMP {
         /// <param name="device">The BitDevice to write.</param>
         /// <param name="addr">Starting address.</param>
         /// <param name="data">Data to be written into the remote device.</param>
-        public void WriteDevice(BitDevice device, ushort addr, bool[] data) {
+        public void WriteBitDevice(Device device, ushort addr, bool[] data) {
+            if (DeviceMethods.GetDeviceType(device) != DeviceType.Bit)
+                throw new ArgumentException("provided device is not a bit device");
+
             ushort count = (ushort)data.Length;
             List<bool> listData = data.ToList();
             List<byte> encodedData = new();
@@ -168,8 +177,8 @@ namespace SLMP {
         /// <param name="device">The WordDevice to write.</param>
         /// <param name="addr">Address.</param>
         /// <param name="data">Data to be written into the remote device.</param>
-        public void WriteDevice(WordDevice device, ushort addr, ushort data) {
-            WriteDevice(device, addr, new ushort[] { data });
+        public void WriteWordDevice(Device device, ushort addr, ushort data) {
+            WriteWordDevice(device, addr, new ushort[] { data });
         }
 
         /// <summary>
@@ -179,7 +188,10 @@ namespace SLMP {
         /// <param name="device">The WordDevice to write.</param>
         /// <param name="addr">Starting address.</param>
         /// <param name="data">Data to be written into the remote device.</param>
-        public void WriteDevice(WordDevice device, ushort addr, ushort[] data) {
+        public void WriteWordDevice(Device device, ushort addr, ushort[] data) {
+            if (DeviceMethods.GetDeviceType(device) != DeviceType.Word)
+                throw new ArgumentException("provided device is not a word device");
+
             ushort count = (ushort)data.Length;
             List<byte> encodedData = new();
 
@@ -199,7 +211,7 @@ namespace SLMP {
         /// <param name="device">The device.</param>
         /// <param name="addr">Starting address.</param>
         /// <param name="text">The string to write.</param>
-        public void WriteString(WordDevice device, ushort addr, string text) {
+        public void WriteString(Device device, ushort addr, string text) {
             // add proper padding to the string
             text += new string('\0', 2 - (text.Length % 2));
             List<ushort> result = new();
@@ -209,7 +221,7 @@ namespace SLMP {
                 .ToList()
                 .ForEach(a => result.Add((ushort)(a[1] << 8 | a[0])));
 
-            WriteDevice(device, addr, result.ToArray());
+            WriteWordDevice(device, addr, result.ToArray());
         }
 
         /// <summary>
@@ -221,11 +233,11 @@ namespace SLMP {
         /// <param name="device">The device.</param>
         /// <param name="addr">Starting address of the null terminated string.</param>
         /// <param name="len">Length of the string.</param>
-        public string ReadString(WordDevice device, ushort addr, ushort len) {
+        public string ReadString(Device device, ushort addr, ushort len) {
             ushort wordCount = (ushort)((len % 2 == 0 ? len : len + 1) / 2);
             List<char> buffer = new();
 
-            foreach (ushort word in ReadDevice(device, addr, wordCount)) {
+            foreach (ushort word in ReadWordDevice(device, addr, wordCount)) {
                 buffer.Add((char)(word & 0xff));
                 buffer.Add((char)(word >> 0x8));
             }
@@ -240,12 +252,12 @@ namespace SLMP {
         /// <typeparam name="T">The `Struct` to read.</typeparam>
         /// <param name="device">The device to read from..</param>
         /// <param name="addr">Starting address of the structure data.</param>
-        public T? ReadStruct<T>(WordDevice device, ushort addr) where T : struct {
+        public T? ReadStruct<T>(Device device, ushort addr) where T : struct {
             Type structType = typeof(T);
-            ushort[] words = ReadDevice(
-                device, addr, (ushort)Struct.GetStructSize(structType));
+            ushort[] words = ReadWordDevice(
+                device, addr, (ushort)SlmpStruct.GetStructSize(structType));
 
-            return Struct.FromWords(structType, words) as T?;
+            return SlmpStruct.FromWords(structType, words) as T?;
         }
 
         public bool SelfTest() {
@@ -270,19 +282,6 @@ namespace SLMP {
         private void CheckConnection() {
             if (!Connected())
                 throw new NotConnectedException();
-        }
-
-        // TODO: refactor this
-        /// <summary>
-        /// Gets the subcommand for a given `(Bit/Word)Device`.
-        /// </summary>
-        /// <exception cref="System.ArgumentException">invalid device type provided</exception>
-        private static ushort GetSubcommand(dynamic type) {
-            return type switch {
-                BitDevice => 0x0001,
-                WordDevice => 0x0000,
-                _ => throw new ArgumentException("invalid device type provided"),
-            };
         }
 
         /// <summary>This function exists because `NetworkStream` doesn't have a `recv_exact` method.</summary>
@@ -356,7 +355,7 @@ namespace SLMP {
             List<byte> rawRequest = HEADER.ToList();
 
             ushort cmd = (ushort)Command.DeviceRead;
-            ushort sub = GetSubcommand(device);
+            ushort sub = DeviceMethods.GetSubcommand(device);
 
             rawRequest.AddRange(new byte[]{
                 // request data length (in terms of bytes): fixed size (12) for the read command
@@ -389,7 +388,7 @@ namespace SLMP {
             List<byte> rawRequest = HEADER.ToList();
 
             ushort cmd = (ushort)Command.DeviceWrite;
-            ushort sub = GetSubcommand(device);
+            ushort sub = DeviceMethods.GetSubcommand(device);
             ushort len = (ushort)(data.Length + 0x000c);
 
             rawRequest.AddRange(new byte[]{

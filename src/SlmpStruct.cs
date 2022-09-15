@@ -2,7 +2,7 @@
 
 namespace SLMP {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    public class SLMPStringAttribute : Attribute {
+    public class SlmpStringAttribute : Attribute {
         public int Length { get; set; }
         public int WordCount => Length % 2 == 0 ? Length / 2 + 1 : (Length + 1) / 2;
     }
@@ -10,13 +10,13 @@ namespace SLMP {
     /// <summary>
     /// Functionality related to encoding/decoding struct.
     /// </summary>
-    public static class Struct {
+    public static class SlmpStruct {
         /// <summary>
         /// This function returns the size of the struct in terms of 
         /// device words. (16 bit values)
         /// Int16, UInt16, Boolean size: 1 word (2 bytes)
         /// Int32, UInt32 size: 2 word (4 bytes)
-        /// String, user defined size, see `SLMPStringAttribute`
+        /// String, user defined size, see `SlmpStringAttribute`
         /// </summary>
         /// <param name="structType">Type of the structure.</param>
         public static int GetStructSize(Type structType) {
@@ -35,11 +35,11 @@ namespace SLMP {
                         size += 2;
                         break;
                     case "String":
-                        SLMPStringAttribute? attr = field
-                            .GetCustomAttributes<SLMPStringAttribute>()
+                        SlmpStringAttribute? attr = field
+                            .GetCustomAttributes<SlmpStringAttribute>()
                             .SingleOrDefault();
-                        if (attr == default(SLMPStringAttribute))
-                            throw new ArgumentException("please add a `SLMPStringAttribute` to the string.");
+                        if (attr == default(SlmpStringAttribute))
+                            throw new ArgumentException("please add a `SlmpStringAttribute` to the string.");
 
                         size += attr.WordCount;
                         break;
@@ -93,11 +93,11 @@ namespace SLMP {
                         index += 2;
                         break;
                     case "String":
-                        SLMPStringAttribute? attr = field
-                            .GetCustomAttributes<SLMPStringAttribute>()
+                        SlmpStringAttribute? attr = field
+                            .GetCustomAttributes<SlmpStringAttribute>()
                             .SingleOrDefault();
-                        if (attr == default(SLMPStringAttribute))
-                            throw new ArgumentException("please add a SLMPStringAttribute to the string.");
+                        if (attr == default(SlmpStringAttribute))
+                            throw new ArgumentException("please add a SlmpStringAttribute to the string.");
 
                         List<char> buffer = new();
                         for (int i = index; i < index + attr.WordCount; i++) {
