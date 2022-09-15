@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("dev",["Class"],[["DeviceMethods",,[["SLMP",,,,0,"File:Device.cs:SLMP.DeviceMethods","CSharpClass:SLMP.DeviceMethods"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("dev",["Enumeration","Class"],[["Device",,[["SLMP",,,,0,"File:Device.cs:SLMP.Device"]]],["DeviceMethods",,[["SLMP",,,,1,"File:Device.cs:SLMP.DeviceMethods","CSharpClass:SLMP.DeviceMethods"]]],["DeviceType",,[["SLMP",,,,0,"File:Device.cs:SLMP.DeviceType"]]]]);

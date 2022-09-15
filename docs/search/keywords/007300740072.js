@@ -1,1 +1,0 @@
-﻿NDSearch.OnPrefixDataLoaded("str",["Class"],[["Struct",,[["SLMP",,,,0,"File:Struct.cs:SLMP.Struct","CSharpClass:SLMP.Struct"]]]]);

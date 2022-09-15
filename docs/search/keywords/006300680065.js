@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("che",["Function"],[["CheckConnection",,[["SLMP.SlmpClient",,,,0,"File:SlmpClient.cs:SLMP.SlmpClient.CheckConnection","CSharpClass:SLMP.SlmpClient:CheckConnection"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("che",["Function"],[["CheckConnection",,[["SLMP.SlmpClient",,,,0,"File:SlmpClient/SlmpClient.cs:SLMP.SlmpClient.CheckConnection","CSharpClass:SLMP.SlmpClient:CheckConnection"]]]]);

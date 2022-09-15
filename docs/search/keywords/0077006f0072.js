@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("wor",["Property","Enumeration"],[["WordCount",,[["SLMP.SLMPStringAttribute",,,,0,"File:Struct.cs:SLMP.SLMPStringAttribute.WordCount","CSharpClass:SLMP.SLMPStringAttribute:WordCount"]]],["WordDevice",,[["SLMP",,,,1,"File:Device.cs:SLMP.WordDevice"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("wor",["Property"],[["WordCount",,[["SLMP.SlmpStringAttribute",,,,0,"File:SlmpStruct.cs:SLMP.SlmpStringAttribute.WordCount","CSharpClass:SLMP.SlmpStringAttribute:WordCount"]]]]);

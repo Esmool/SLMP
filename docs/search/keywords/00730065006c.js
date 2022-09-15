@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("sel",["Function"],[["SelfTest",,[["SLMP.SlmpClient",,,,0,"File:SlmpClient.cs:SLMP.SlmpClient.SelfTest","CSharpClass:SLMP.SlmpClient:SelfTest"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("sel",["Function"],[["SelfTest",,[["SLMP.SlmpClient",,,,0,"File:SlmpClient/SlmpClient.cs:SLMP.SlmpClient.SelfTest","CSharpClass:SLMP.SlmpClient:SelfTest"]]]]);

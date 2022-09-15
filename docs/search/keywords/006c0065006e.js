@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("len",["Property"],[["Length",,[["SLMP.SLMPStringAttribute",,,,0,"File:Struct.cs:SLMP.SLMPStringAttribute.Length","CSharpClass:SLMP.SLMPStringAttribute:Length"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("len",["Property"],[["Length",,[["SLMP.SlmpStringAttribute",,,,0,"File:SlmpStruct.cs:SLMP.SlmpStringAttribute.Length","CSharpClass:SLMP.SlmpStringAttribute:Length"]]]]);

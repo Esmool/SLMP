@@ -12,16 +12,16 @@
  <div class="CTitle">Types</div>
 </div>
 
-<a name="SLMP.WordDevice"></a><a name="Topic52"></a><div class="CTopic TEnumeration LCSharp">
- <div class="CTitle">WordDevice</div>
- <div id="NDPrototype52" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">public enum</span> WordDevice</div></div>
- <div class="CBody"><p>This enum encodes the supported word devices that is available to operate on.</p></div>
+<a name="SLMP.DeviceType"></a><a name="Topic14"></a><div class="CTopic TEnumeration LCSharp">
+ <div class="CTitle">DeviceType</div>
+ <div id="NDPrototype14" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">public enum</span> DeviceType</div></div>
+ <div class="CBody"><p>This enum contains the type of supported device types.</p></div>
 </div>
 
-<a name="SLMP.BitDevice"></a><a name="Topic53"></a><div class="CTopic TEnumeration LCSharp">
- <div class="CTitle">BitDevice</div>
- <div id="NDPrototype53" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">public enum</span> BitDevice</div></div>
- <div class="CBody"><p>This enum encodes the supported bit devices that is available to operate on.</p></div>
+<a name="SLMP.Device"></a><a name="Topic15"></a><div class="CTopic TEnumeration LCSharp">
+ <div class="CTitle">Device</div>
+ <div id="NDPrototype15" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">public enum</span> Device</div></div>
+ <div class="CBody"><p>This enum encodes the supported devices that is available to operate on.</p></div>
 </div>
 
 <a name="SLMP.DeviceMethods"></a><a name="Topic54"></a><div class="CTopic TClass LCSharp">
@@ -33,14 +33,24 @@
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="SLMP.DeviceMethods.FromString"></a><a name="Topic56"></a><div class="CTopic TFunction LCSharp">
- <div class="CTitle">FromString</div>
- <div id="NDPrototype56" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">public static</span> <span class="SHKeyword">bool</span> FromString(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="first"></td><td class="PType"><span class="SHKeyword">string</span>&nbsp;</td><td class="PName last">device,</td></tr><tr><td class="PModifierQualifier first"><span class="SHKeyword">out</span>&nbsp;</td><td class="PType"><a href="../index.html#File:Device.cs:SLMP.WordDevice" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,52);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >WordDevice</a>?&nbsp;</td><td class="PName last">value</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+<a name="SLMP.DeviceMethods.GetSubcommand"></a><a name="Topic16"></a><div class="CTopic TFunction LCSharp">
+ <div class="CTitle">GetSubcommand</div>
+ <div id="NDPrototype16" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">public static</span> <span class="SHKeyword">ushort</span> GetSubcommand(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PType first"><a href="../index.html#File:Device.cs:SLMP.Device" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,15);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Device</a>&nbsp;</td><td class="PName last">device</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
 </div>
 
-<a name="SLMP.DeviceMethods.FromString(2)"></a><a name="Topic57"></a><div class="CTopic TFunction LCSharp last">
+<a name="SLMP.DeviceMethods.GetDeviceType"></a><a name="Topic17"></a><div class="CTopic TFunction LCSharp">
+ <div class="CTitle">GetDeviceType</div>
+ <div id="NDPrototype17" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">public static</span> <a href="../index.html#File:Device.cs:SLMP.DeviceType" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,14);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >DeviceType</a> GetDeviceType(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PType first"><a href="../index.html#File:Device.cs:SLMP.Device" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,15);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Device</a>&nbsp;</td><td class="PName last">device</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+</div>
+
+<a name="SLMP.DeviceMethods.FromString"></a><a name="Topic18"></a><div class="CTopic TFunction LCSharp">
  <div class="CTitle">FromString</div>
- <div id="NDPrototype57" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">public static</span> <span class="SHKeyword">bool</span> FromString(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="first"></td><td class="PType"><span class="SHKeyword">string</span>&nbsp;</td><td class="PName last">device,</td></tr><tr><td class="PModifierQualifier first"><span class="SHKeyword">out</span>&nbsp;</td><td class="PType"><a href="../index.html#File:Device.cs:SLMP.BitDevice" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,53);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >BitDevice</a>?&nbsp;</td><td class="PName last">value</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype18" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">public static</span> <span class="SHKeyword">bool</span> FromString(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="first"></td><td class="PType"><span class="SHKeyword">string</span>&nbsp;</td><td class="PName last">device,</td></tr><tr><td class="PModifierQualifier first"><span class="SHKeyword">out</span>&nbsp;</td><td class="PType"><a href="../index.html#File:Device.cs:SLMP.Device" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,15);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Device</a>?&nbsp;</td><td class="PName last">value</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+</div>
+
+<a name="SLMP.DeviceMethods.ParseDeviceAddress"></a><a name="Topic19"></a><div class="CTopic TFunction LCSharp last">
+ <div class="CTitle">ParseDeviceAddress</div>
+ <div id="NDPrototype19" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">public static</span> Tuple&lt;<a href="../index.html#File:Device.cs:SLMP.Device" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,15);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Device</a>, <span class="SHKeyword">ushort</span>&gt; ParseDeviceAddress(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PType first"><span class="SHKeyword">string</span>&nbsp;</td><td class="PName last">address</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
 </div>
 
 </body></html>

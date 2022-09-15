@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("par",["Function"],[["ParseDeviceAddress",,[["SLMP.DeviceMethods",,,,0,"File:Device.cs:SLMP.DeviceMethods.ParseDeviceAddress","CSharpClass:SLMP.DeviceMethods:ParseDeviceAddress"]]]]);

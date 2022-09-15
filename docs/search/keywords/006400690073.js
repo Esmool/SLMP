@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("dis",["Function"],[["Disconnect",,[["SLMP.SlmpClient",,,,0,"File:SlmpClient.cs:SLMP.SlmpClient.Disconnect","CSharpClass:SLMP.SlmpClient:Disconnect"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("dis",["Function"],[["Disconnect",,[["SLMP.SlmpClient",,,,0,"File:SlmpClient/SlmpClient.cs:SLMP.SlmpClient.Disconnect","CSharpClass:SLMP.SlmpClient:Disconnect"]]]]);
