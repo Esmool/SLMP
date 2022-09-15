@@ -5,7 +5,7 @@ namespace SLMP {
     /// This class exposes functionality to connect and manage
     /// SLMP-compatible devices.
     /// </summary>
-    public class SlmpClient {
+    public partial class SlmpClient {
         /// <summary>
         /// This `HEADER` array contains the shared (header) data between
         /// commands that are supported in this library.
@@ -58,208 +58,6 @@ namespace SLMP {
             _client.Close();
         }
 
-        /// <summary>
-        /// Reads a single Bit from a given `BitDevice` and returns a `bool`.
-        /// </summary>
-        /// <param name="device">The word device.</param>
-        /// <param name="addr">Bit address.</param>
-        public bool ReadBitDevice(Device device, ushort addr) {
-            return ReadBitDevice(device, addr, 1)[0];
-        }
-
-        /// <summary>
-        /// Reads from a given `BitDevice` and returns an array of `bool`s.
-        /// Note that there's a limit on how many registers can be read at a time.
-        /// </summary>
-        /// <param name="device">The bit device.</param>
-        /// <param name="addr">Start address.</param>
-        /// <param name="count">Number of registers to read.</param>
-        public bool[] ReadBitDevice(Device device, ushort addr, ushort count) {
-            if (DeviceMethods.GetDeviceType(device) != DeviceType.Bit)
-                throw new ArgumentException("provided device is not a bit device");
-
-            SendReadDeviceCommand(device, addr, count);
-            List<byte> response = ReceiveResponse();
-            List<bool> result = new();
-
-            response.ForEach(delegate (byte a) {
-                result.Add((a & 0x10) != 0);
-                result.Add((a & 0x01) != 0);
-            });
-
-            return result.GetRange(0, count).ToArray();
-        }
-
-        /// <summary>
-        /// Reads a single Word from a the given `WordDevice` and returns an `ushort`.
-        /// </summary>
-        /// <param name="device">The word device.</param>
-        /// <param name="addr">Word address.</param>
-        public ushort ReadWordDevice(Device device, ushort addr) {
-            return ReadWordDevice(device, addr, 1)[0];
-        }
-
-        /// <summary>
-        /// Reads from a given `WordDevice` and returns an array of `ushort`s.
-        /// Note that there's a limit on how many registers can be read at a time.
-        /// </summary>
-        /// <param name="device">The word device.</param>
-        /// <param name="addr">Start address.</param>
-        /// <param name="count">Number of registers to read.</param>
-        public ushort[] ReadWordDevice(Device device, ushort addr, ushort count) {
-            if (DeviceMethods.GetDeviceType(device) != DeviceType.Word)
-                throw new ArgumentException("provided device is not a word device");
-
-            SendReadDeviceCommand(device, addr, count);
-            List<byte> response = ReceiveResponse();
-            List<ushort> result = new();
-
-            // if the length of the response isn't even
-            // then the response is invalid and we can't
-            // construct an array of `ushort`s from it
-            if (response.Count % 2 != 0)
-                throw new InvalidDataException("While reading words: data section of the response is uneven");
-
-            // word data is received in little endian format
-            // which means the lower byte of a word comes first
-            // and upper byte second
-            response
-                .Chunk(2)
-                .ToList()
-                .ForEach(n => result.Add((ushort)(n[1] << 8 | n[0])));
-
-            return result.ToArray();
-        }
-
-        /// <summary>
-        /// Writes a single `Bit` to a given `BitDevice`.
-        /// </summary>
-        /// <param name="device">The WordDevice to write.</param>
-        /// <param name="addr">Address.</param>
-        /// <param name="data">Data to be written into the remote device.</param>
-        public void WriteBitDevice(Device device, ushort addr, bool data) {
-            WriteBitDevice(device, addr, new bool[] { data });
-        }
-
-        /// <summary>
-        /// Writes an array of `bool`s to a given `BitDevice`.
-        /// Note that there's a limit on how many registers can be written at a time.
-        /// </summary>
-        /// <param name="device">The BitDevice to write.</param>
-        /// <param name="addr">Starting address.</param>
-        /// <param name="data">Data to be written into the remote device.</param>
-        public void WriteBitDevice(Device device, ushort addr, bool[] data) {
-            if (DeviceMethods.GetDeviceType(device) != DeviceType.Bit)
-                throw new ArgumentException("provided device is not a bit device");
-
-            ushort count = (ushort)data.Length;
-            List<bool> listData = data.ToList();
-            List<byte> encodedData = new();
-
-            // If the length of `data` isn't even, add a dummy
-            // `false` to make the encoding easier. It gets ignored on the station side.
-            if (count % 2 != 0)
-                listData.Add(false);
-
-            listData
-                .Chunk(2)
-                .ToList()
-                .ForEach(a => encodedData.Add(
-                    (byte)(Convert.ToByte(a[0]) << 4 | Convert.ToByte(a[1]))));
-
-            SendWriteDeviceCommand(device, addr, count, encodedData.ToArray());
-            ReceiveResponse();
-        }
-
-        /// <summary>
-        /// Writes a single `ushort` to a given `WordDevice`.
-        /// </summary>
-        /// <param name="device">The WordDevice to write.</param>
-        /// <param name="addr">Address.</param>
-        /// <param name="data">Data to be written into the remote device.</param>
-        public void WriteWordDevice(Device device, ushort addr, ushort data) {
-            WriteWordDevice(device, addr, new ushort[] { data });
-        }
-
-        /// <summary>
-        /// Writes an array of `ushort`s to a given `WordDevice`.
-        /// Note that there's a limit on how many registers can be written at a time.
-        /// </summary>
-        /// <param name="device">The WordDevice to write.</param>
-        /// <param name="addr">Starting address.</param>
-        /// <param name="data">Data to be written into the remote device.</param>
-        public void WriteWordDevice(Device device, ushort addr, ushort[] data) {
-            if (DeviceMethods.GetDeviceType(device) != DeviceType.Word)
-                throw new ArgumentException("provided device is not a word device");
-
-            ushort count = (ushort)data.Length;
-            List<byte> encodedData = new();
-
-            foreach (ushort word in data) {
-                encodedData.Add((byte)(word & 0xff));
-                encodedData.Add((byte)(word >> 0x8));
-            }
-
-            SendWriteDeviceCommand(device, addr, count, encodedData.ToArray());
-            ReceiveResponse();
-        }
-
-        /// <summary>
-        /// Writes the given string to the specified device as a null terminated string.
-        /// Note that there's a limit on how many registers can be written at a time.
-        /// </summary>
-        /// <param name="device">The device.</param>
-        /// <param name="addr">Starting address.</param>
-        /// <param name="text">The string to write.</param>
-        public void WriteString(Device device, ushort addr, string text) {
-            // add proper padding to the string
-            text += new string('\0', 2 - (text.Length % 2));
-            List<ushort> result = new();
-
-            System.Text.Encoding.ASCII.GetBytes(text.ToCharArray())
-                .Chunk(2)
-                .ToList()
-                .ForEach(a => result.Add((ushort)(a[1] << 8 | a[0])));
-
-            WriteWordDevice(device, addr, result.ToArray());
-        }
-
-        /// <summary>
-        /// Reads a string with the length `len` from the specified `WordDevice`. Note that
-        /// this function reads the string at best two chars, ~500 times in a second.
-        /// Meaning it can only read ~1000 chars per second.
-        /// Note that there's a limit on how many registers can be read at a time.
-        /// </summary>
-        /// <param name="device">The device.</param>
-        /// <param name="addr">Starting address of the null terminated string.</param>
-        /// <param name="len">Length of the string.</param>
-        public string ReadString(Device device, ushort addr, ushort len) {
-            ushort wordCount = (ushort)((len % 2 == 0 ? len : len + 1) / 2);
-            List<char> buffer = new();
-
-            foreach (ushort word in ReadWordDevice(device, addr, wordCount)) {
-                buffer.Add((char)(word & 0xff));
-                buffer.Add((char)(word >> 0x8));
-            }
-
-            return string.Join("", buffer.GetRange(0, len));
-        }
-
-        /// <summary>
-        /// Read from a `WordDevice` to create a C# structure.
-        /// The target structure can only contain very primitive data types.
-        /// </summary>
-        /// <typeparam name="T">The `Struct` to read.</typeparam>
-        /// <param name="device">The device to read from..</param>
-        /// <param name="addr">Starting address of the structure data.</param>
-        public T? ReadStruct<T>(Device device, ushort addr) where T : struct {
-            Type structType = typeof(T);
-            ushort[] words = ReadWordDevice(
-                device, addr, (ushort)SlmpStruct.GetStructSize(structType));
-
-            return SlmpStruct.FromWords(structType, words) as T?;
-        }
-
         public bool SelfTest() {
             try {
                 SendSelfTestCommand();
@@ -276,6 +74,7 @@ namespace SLMP {
         /// Query the connection status.
         /// </summary>
         public bool Connected() {
+            // TODO: integrate self test into this method
             return _stream != null && _client.Connected;
         }
 

@@ -1,4 +1,6 @@
-﻿namespace SLMP {
+﻿using System.Text.RegularExpressions;
+
+namespace SLMP {
     /// <summary>
     /// This enum contains the type of supported device types.
     /// </summary>
@@ -72,6 +74,26 @@
             };
 
             return true;
+        }
+
+        public static Tuple<Device, ushort> ParseDeviceAddress(string address) {
+            Regex rx = new(@"([a-zA-Z]+)(\d+)");
+            Match match = rx.Match(address);
+
+            if (match.Groups.Count < 3)
+                throw new ArgumentException($"couldn't parse device address: {address}");
+
+            string sdevice = match.Groups[1].Value;
+            string saddr = match.Groups[2].Value;
+
+            if (!FromString(sdevice, out Device? device)) throw new ArgumentException($"invalid device provided: {sdevice}");
+            if (!UInt16.TryParse(saddr, out ushort uaddr)) throw new ArgumentException($"invalid address provided: {saddr}");
+
+            // this exists to convince the type checker that `device` won't be null here
+            if (device == null)
+                throw new ArgumentException("unreachable");
+
+            return Tuple.Create((Device)device, uaddr);
         }
     }
 }
