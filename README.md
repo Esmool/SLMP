@@ -1,5 +1,5 @@
 # SLMP
-SLMP is a protocol used for access from an external device to an SLMP compatible device through the Ethernet. SLMP communications are available among devices that can transfer messages by SLMP. (personal computers, human machine interface and others.)
+SLMP is a protocol used for access from an external device to an SLMP-compatible device through the Ethernet. SLMP communications are available among devices that can transfer messages by SLMP. (personal computers, human machine interface and others.)
 
 This project implements a client library that supports a subset of the functionality described in the [SLMP reference manual](https://www.allied-automation.com/wp-content/uploads/2015/02/MITSUBISHI_manual_plc_iq-r_slmp.pdf), mainly regarding reading from and writing to `Device`s.
 
@@ -12,16 +12,8 @@ This project implements a client library that supports a subset of the functiona
 # Examples
 
 Currently supported devices:
-- D
-- W
-- R
-- ZR
-- SD
-- X
-- Y
-- M
-- B
-- SM
+- D, W, R, ZR, SD
+- X, Y, M,  B, SM
 
 Keep in mind that some of these devices might not be available for use on your targeted SLMP-compatible device.
 
@@ -39,34 +31,34 @@ plc.Disconnect();
 ```
 
 ### Reading/writing into registers
-There are a couple of ways to describe a read/write operation, you can either describe the target device with a string, e.g, "D200", "M200", "SD0" or directly with the `Device` enum. See the method prototypes below to get an idea of how the API operates.
+There are a couple of ways to describe a read/write operation, you can either describe the target device with a string, e.g, `"D200", "M200", "SD0"` or directly with the `Device` enum. See the method prototypes below to get an idea of how the API operates.
 
 ```C#
-public bool ReadBitDevice(string addr)
-public bool ReadBitDevice(Device device, ushort addr)
-public bool[] ReadBitDevice(string addr, ushort count)
-public bool[] ReadBitDevice(Device device, ushort addr, ushort count)
+bool ReadBitDevice(string addr)
+bool ReadBitDevice(Device device, ushort addr)
+bool[] ReadBitDevice(string addr, ushort count)
+bool[] ReadBitDevice(Device device, ushort addr, ushort count)
 
-public ushort ReadWordDevice(string addr)
-public ushort ReadWordDevice(Device device, ushort addr)
-public ushort[] ReadWordDevice(string addr, ushort count)
-public ushort[] ReadWordDevice(Device device, ushort addr, ushort count)
+ushort ReadWordDevice(string addr)
+ushort ReadWordDevice(Device device, ushort addr)
+ushort[] ReadWordDevice(string addr, ushort count)
+ushort[] ReadWordDevice(Device device, ushort addr, ushort count)
 
-public string ReadString(string addr, ushort len)
-public string ReadString(Device device, ushort addr, ushort len)
+string ReadString(string addr, ushort len)
+string ReadString(Device device, ushort addr, ushort len)
 
-public void WriteBitDevice(string addr, bool data)
-public void WriteBitDevice(string addr, bool[] data)
-public void WriteBitDevice(Device device, ushort addr, bool data)
-public void WriteBitDevice(Device device, ushort addr, bool[] data)
+void WriteBitDevice(string addr, bool data)
+void WriteBitDevice(string addr, bool[] data)
+void WriteBitDevice(Device device, ushort addr, bool data)
+void WriteBitDevice(Device device, ushort addr, bool[] data)
 
-public void WriteWordDevice(string addr, ushort data)
-public void WriteWordDevice(string addr, ushort[] data)
-public void WriteWordDevice(Device device, ushort addr, ushort data)
-public void WriteWordDevice(Device device, ushort addr, ushort[] data)
+void WriteWordDevice(string addr, ushort data)
+void WriteWordDevice(string addr, ushort[] data)
+void WriteWordDevice(Device device, ushort addr, ushort data)
+void WriteWordDevice(Device device, ushort addr, ushort[] data)
 
-public void WriteString(string addr, string text)
-public void WriteString(Device device, ushort addr, string text)
+void WriteString(string addr, string text)
+void WriteString(Device device, ushort addr, string text)
 ```
 
 ### Reading structures
