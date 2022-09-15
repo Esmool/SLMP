@@ -119,6 +119,11 @@ namespace SLMP {
             return string.Join("", buffer.GetRange(0, len));
         }
 
+        public T? ReadStruct<T>(string addr) where T : struct {
+            Tuple<Device, ushort> data = DeviceMethods.ParseDeviceAddress(addr);
+            return ReadStruct<T>(data.Item1, data.Item2);
+        }
+
         /// <summary>
         /// Read from a `WordDevice` to create a C# structure.
         /// The target structure can only contain very primitive data types.
