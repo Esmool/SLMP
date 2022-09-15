@@ -1,10 +1,21 @@
 namespace SLMP {
     public partial class SlmpClient {
+        /// <summary>
+        /// Reads a single Bit from a given `BitDevice` and returns a `bool`.
+        /// </summary>
+        /// <param name="addr">The device address as a string.</param>
         public bool ReadBitDevice(string addr) {
             Tuple<Device, ushort> data = DeviceMethods.ParseDeviceAddress(addr);
             return ReadBitDevice(data.Item1, data.Item2);
         }
 
+        /// <summary>
+        /// Reads from a given `BitDevice` and returns an array of `bool`s.
+        /// Note that there's a limit on how many registers can be read at a time.
+        /// </summary>
+        /// <param name="addr">Start address.</param>
+        /// <param name="count">Number of registers to read.</param>
+        /// <returns></returns>
         public bool[] ReadBitDevice(string addr, ushort count) {
             Tuple<Device, ushort> data = DeviceMethods.ParseDeviceAddress(addr);
             return ReadBitDevice(data.Item1, data.Item2, count);
@@ -42,11 +53,21 @@ namespace SLMP {
             return result.GetRange(0, count).ToArray();
         }
 
+        /// <summary>
+        /// Reads a single Word from a the given `WordDevice` and returns an `ushort`.
+        /// </summary>
+        /// <param name="addr">The device address as a string.</param>
         public ushort ReadWordDevice(string addr) {
             Tuple<Device, ushort> data = DeviceMethods.ParseDeviceAddress(addr);
             return ReadWordDevice(data.Item1, data.Item2);
         }
 
+        /// <summary>
+        /// Reads from a given `WordDevice` and returns an array of `ushort`s.
+        /// Note that there's a limit on how many registers can be read at a time.
+        /// </summary>
+        /// <param name="addr">Start address as a string.</param>
+        /// <param name="count">Number of registers to read.</param>
         public ushort[] ReadWordDevice(string addr, ushort count) {
             Tuple<Device, ushort> data = DeviceMethods.ParseDeviceAddress(addr);
             return ReadWordDevice(data.Item1, data.Item2, count);
@@ -93,6 +114,14 @@ namespace SLMP {
             return result.ToArray();
         }
 
+        /// <summary>
+        /// Reads a string with the length `len` from the specified `WordDevice`. Note that
+        /// this function reads the string at best two chars, ~500 times in a second.
+        /// Meaning it can only read ~1000 chars per second.
+        /// Note that there's a limit on how many registers can be read at a time.
+        /// </summary>
+        /// <param name="addr">Starting address of the null terminated string as a string.</param>
+        /// <param name="len">Length of the string.</param>
         public string ReadString(string addr, ushort len) {
             Tuple<Device, ushort> data = DeviceMethods.ParseDeviceAddress(addr);
             return ReadString(data.Item1, data.Item2, len);
@@ -119,6 +148,12 @@ namespace SLMP {
             return string.Join("", buffer.GetRange(0, len));
         }
 
+        /// <summary>
+        /// Read from a `WordDevice` to create a C# structure.
+        /// The target structure can only contain very primitive data types.
+        /// </summary>
+        /// <typeparam name="T">The `Struct` to read.</typeparam>
+        /// <param name="addr">Starting address of the structure data in the string format.</param>
         public T? ReadStruct<T>(string addr) where T : struct {
             Tuple<Device, ushort> data = DeviceMethods.ParseDeviceAddress(addr);
             return ReadStruct<T>(data.Item1, data.Item2);

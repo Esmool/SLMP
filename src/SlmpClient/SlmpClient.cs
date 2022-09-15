@@ -29,7 +29,7 @@ namespace SLMP {
             _client = new TcpClient();
         }
 
-        // TODO: reveise `Connect` and `Disconnect` functions
+        // TODO: revise `Connect` and `Disconnect` functions
         /// <summary>Connects to the address specified in the config.</summary>
         /// <exception cref="System.TimeoutException">connection timed out</exception>
         public void Connect() {
@@ -58,6 +58,17 @@ namespace SLMP {
             _client.Close();
         }
 
+        /// <summary>
+        /// Query the connection status.
+        /// </summary>
+        public bool Connected() {
+            // TODO: integrate self test into this method
+            return _stream != null && _client.Connected;
+        }
+
+        /// <summary>
+        /// Issue a `SelfTest` command.
+        /// </summary>
         public bool SelfTest() {
             try {
                 SendSelfTestCommand();
@@ -70,23 +81,11 @@ namespace SLMP {
             }
         }
 
-        /// <summary>
-        /// Query the connection status.
-        /// </summary>
-        public bool Connected() {
-            // TODO: integrate self test into this method
-            return _stream != null && _client.Connected;
-        }
-
-        private void CheckConnection() {
-            if (!Connected())
-                throw new NotConnectedException();
-        }
-
         /// <summary>This function exists because `NetworkStream` doesn't have a `recv_exact` method.</summary>
         /// <param name="count">Number of bytes to receive.</param>
         private byte[] ReceiveBytes(int count) {
-            CheckConnection();
+            if (!Connected())
+                throw new NotConnectedException();
 
             int offset = 0, toRead = count;
             int read;
@@ -106,7 +105,8 @@ namespace SLMP {
         /// <summary>Receives the response and returns the raw response data.</summary>
         /// <returns>Raw response data</returns>
         private List<byte> ReceiveResponse() {
-            CheckConnection();
+            if (!Connected())
+                throw new NotConnectedException();
 
             // read a single byte to determine
             // if a serial no. is included or not
@@ -149,7 +149,8 @@ namespace SLMP {
         /// <param name="adr">The address</param>
         /// <param name="cnt">The count.</param>
         private void SendReadDeviceCommand(dynamic device, ushort adr, ushort cnt) {
-            CheckConnection();
+            if (!Connected())
+                throw new NotConnectedException();
 
             List<byte> rawRequest = HEADER.ToList();
 
@@ -182,7 +183,8 @@ namespace SLMP {
         /// <param name="cnt">Number of data points.</param>
         /// <param name="data">Data itself.</param>
         private void SendWriteDeviceCommand(dynamic device, ushort adr, ushort cnt, byte[] data) {
-            CheckConnection();
+            if (!Connected())
+                throw new NotConnectedException();
 
             List<byte> rawRequest = HEADER.ToList();
 
@@ -214,9 +216,8 @@ namespace SLMP {
         /// </summary>
         private void SendSelfTestCommand() {
             // We don't check the connection on purpose since
-            // this function is meant to be internal and a part of `CheckConnection`.
+            // this function is meant to be internal and a part of `Connected` function.
             // If we do call it, it will result in a stack overflow.
-            // CheckConnection();
 
             List<byte> rawRequest = HEADER.ToList();
             ushort cmd = (ushort)Command.SelfTest;

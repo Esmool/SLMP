@@ -3,7 +3,13 @@
 namespace SLMP {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class SlmpStringAttribute : Attribute {
+        /// <summary>
+        /// Length of the string.
+        /// </summary>
         public int Length { get; set; }
+        /// <summary>
+        /// Number of the device words that the string occupies.
+        /// </summary>
         public int WordCount => Length % 2 == 0 ? Length / 2 + 1 : (Length + 1) / 2;
     }
 

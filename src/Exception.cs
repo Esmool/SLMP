@@ -25,7 +25,7 @@
     /// </summary>
     /// <seealso cref="System.Exception" />
     public class SLMPException : Exception {
-        public int SLMPEndCode;
+        public int SLMPEndCode { get; set; }
         public SLMPException(int endCode)
             : base($"Received non-zero SLMP EndCode: {endCode:X4}H") {
             SLMPEndCode = endCode;
