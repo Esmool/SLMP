@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("asi",["Function"],[["AsIntArray",,[["SLMP.Extensions",,,,0,"File:Extensions.cs:SLMP.Extensions.AsIntArray","CSharpClass:SLMP.Extensions:AsIntArray"]]]]);

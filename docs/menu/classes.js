@@ -1,1 +1,1 @@
-﻿NDMenu.OnSectionLoaded("classes.js",[[1,"DeviceMethods"],[1,"InvalidDataException"],[1,"NotConnectedException"],[1,"SlmpClient"],[1,"SlmpConfig"],[1,"SLMPException"],[1,"SlmpStringAttribute"],[1,"SlmpStruct"]]);
+﻿NDMenu.OnSectionLoaded("classes.js",[[1,"DeviceMethods"],[1,"Extensions"],[1,"InvalidDataException"],[1,"NotConnectedException"],[1,"SlmpClient"],[1,"SlmpConfig"],[1,"SLMPException"],[1,"SlmpStringAttribute"],[1,"SlmpStruct"]]);
