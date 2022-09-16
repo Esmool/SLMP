@@ -57,12 +57,15 @@ namespace SLMP {
             _client.Close();
         }
 
+        private bool InternalIsConnected() {
+            return _stream != null && _client.Connected;
+        }
+
         /// <summary>
         /// Query the connection status.
         /// </summary>
-        public bool Connected() {
-            // TODO: integrate self test into this method
-            return _stream != null && _client.Connected;
+        public bool IsConnected() {
+            return InternalIsConnected() && SelfTest();
         }
 
         /// <summary>
@@ -76,6 +79,7 @@ namespace SLMP {
                 return response.Count == 6 &&
                        response.SequenceEqual(new byte[] { 0x04, 0x00, 0xde, 0xad, 0xbe, 0xef });
             } catch {
+                Disconnect();
                 return false;
             }
         }
@@ -83,7 +87,7 @@ namespace SLMP {
         /// <summary>This function exists because `NetworkStream` doesn't have a `recv_exact` method.</summary>
         /// <param name="count">Number of bytes to receive.</param>
         private byte[] ReceiveBytes(int count) {
-            if (!Connected())
+            if (!InternalIsConnected())
                 throw new NotConnectedException();
 
             int offset = 0, toRead = count;
@@ -104,7 +108,7 @@ namespace SLMP {
         /// <summary>Receives the response and returns the raw response data.</summary>
         /// <returns>Raw response data</returns>
         private List<byte> ReceiveResponse() {
-            if (!Connected())
+            if (!InternalIsConnected())
                 throw new NotConnectedException();
 
             // read a single byte to determine
@@ -148,7 +152,7 @@ namespace SLMP {
         /// <param name="adr">The address</param>
         /// <param name="cnt">The count.</param>
         private void SendReadDeviceCommand(dynamic device, ushort adr, ushort cnt) {
-            if (!Connected())
+            if (!InternalIsConnected())
                 throw new NotConnectedException();
 
             List<byte> rawRequest = HEADER.ToList();
@@ -182,7 +186,7 @@ namespace SLMP {
         /// <param name="cnt">Number of data points.</param>
         /// <param name="data">Data itself.</param>
         private void SendWriteDeviceCommand(dynamic device, ushort adr, ushort cnt, byte[] data) {
-            if (!Connected())
+            if (!InternalIsConnected())
                 throw new NotConnectedException();
 
             List<byte> rawRequest = HEADER.ToList();
@@ -214,9 +218,8 @@ namespace SLMP {
         /// Sends the `SelfTest` command.
         /// </summary>
         private void SendSelfTestCommand() {
-            // We don't check the connection on purpose since
-            // this function is meant to be internal and a part of `Connected` function.
-            // If we do call it, it will result in a stack overflow.
+            if (!InternalIsConnected())
+                throw new NotConnectedException();
 
             List<byte> rawRequest = HEADER.ToList();
             ushort cmd = (ushort)Command.SelfTest;
