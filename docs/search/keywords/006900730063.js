@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("isc",["Function"],[["IsConnected",,[["SLMP.SlmpClient",,,,0,"File:SlmpClient/SlmpClient.cs:SLMP.SlmpClient.IsConnected","CSharpClass:SLMP.SlmpClient:IsConnected"]]]]);

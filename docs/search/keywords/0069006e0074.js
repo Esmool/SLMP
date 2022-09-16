@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("int",["Function"],[["InternalIsConnected",,[["SLMP.SlmpClient",,,,0,"File:SlmpClient/SlmpClient.cs:SLMP.SlmpClient.InternalIsConnected","CSharpClass:SLMP.SlmpClient:InternalIsConnected"]]]]);
