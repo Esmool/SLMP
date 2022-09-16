@@ -29,7 +29,6 @@ namespace SLMP {
             _client = new TcpClient();
         }
 
-        // TODO: revise `Connect` and `Disconnect` functions
         /// <summary>Connects to the address specified in the config.</summary>
         /// <exception cref="System.TimeoutException">connection timed out</exception>
         public void Connect() {

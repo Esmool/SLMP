@@ -1,3 +1,5 @@
+using System.Collections;
+
 namespace SLMP {
     /// <summary>
     /// A set of helper functions to perform common conversions.
@@ -28,6 +30,18 @@ namespace SLMP {
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Convert an `ushort` to `BitArray`, LSB -> MSB.
+        /// </summary>
+        public static BitArray AsBitArray(this ushort data) {
+            bool[] bits = new bool[16];
+
+            for (int i = 0; i < 16; i++)
+                bits[i] = ((data >> i) & 1) != 0;
+
+            return new BitArray(bits);
         }
     }
 }

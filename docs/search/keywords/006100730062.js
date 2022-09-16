@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("asb",["Function"],[["AsByteArray",,[["SLMP.Extensions",,,,0,"File:Extensions.cs:SLMP.Extensions.AsByteArray","CSharpClass:SLMP.Extensions:AsByteArray"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("asb",["Function"],[["AsBitArray",,[["SLMP.Extensions",,,,0,"File:Extensions.cs:SLMP.Extensions.AsBitArray","CSharpClass:SLMP.Extensions:AsBitArray"]]],["AsByteArray",,[["SLMP.Extensions",,,,0,"File:Extensions.cs:SLMP.Extensions.AsByteArray","CSharpClass:SLMP.Extensions:AsByteArray"]]]]);
