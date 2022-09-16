@@ -94,12 +94,10 @@ namespace SLMP {
             int read;
             byte[] buffer = new byte[count];
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-            while (toRead > 0 && (read = _stream.Read(buffer, offset, toRead)) > 0) {
+            while (toRead > 0 && (read = _stream!.Read(buffer, offset, toRead)) > 0) {
                 toRead -= read;
                 offset += read;
             }
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
             if (toRead > 0) throw new EndOfStreamException();
 
             return buffer;
@@ -113,9 +111,7 @@ namespace SLMP {
 
             // read a single byte to determine
             // if a serial no. is included or not
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-            int value = _stream.ReadByte();
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+            int value = _stream!.ReadByte();
             byte[] hdrBuf;
             switch (value) {
                 // if value is 0xd0, there's no serial no. included
@@ -173,9 +169,7 @@ namespace SLMP {
                 (byte)(cnt & 0xff), (byte)(cnt >> 0x8),
             });
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-            _stream.Write(rawRequest.ToArray());
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+            _stream!.Write(rawRequest.ToArray());
         }
 
         /// <summary>
@@ -209,9 +203,7 @@ namespace SLMP {
             });
             rawRequest.AddRange(data);
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-            _stream.Write(rawRequest.ToArray());
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+            _stream!.Write(rawRequest.ToArray());
         }
 
         /// <summary>
@@ -236,9 +228,7 @@ namespace SLMP {
                 0xde, 0xad, 0xbe, 0xef
             });
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-            _stream.Write(rawRequest.ToArray());
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+            _stream!.Write(rawRequest.ToArray());
         }
     }
 }
