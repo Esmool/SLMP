@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace SLMP {
     public partial class SlmpClient {
         /// <summary>
@@ -106,10 +108,10 @@ namespace SLMP {
             // word data is received in little endian format
             // which means the lower byte of a word comes first
             // and upper byte second
-            response
-                .Chunk(2)
-                .ToList()
-                .ForEach(n => result.Add((ushort)(n[1] << 8 | n[0])));
+            for (int i=0; i<response.Count; i+=2) {
+                ushort value = (ushort)(response[i + 1] << 8 | response[i]);
+                result.Add(value);
+            }
 
             return result.ToArray();
         }

@@ -18,7 +18,7 @@ namespace SLMP {
             0x00,           // request destination multidrop station no.
         };
 
-        private SlmpConfig _config;
+        private readonly SlmpConfig _config;
         private TcpClient _client;
         private NetworkStream? _stream;
 
@@ -112,26 +112,20 @@ namespace SLMP {
             // read a single byte to determine
             // if a serial no. is included or not
             int value = _stream!.ReadByte();
-            byte[] hdrBuf;
-            switch (value) {
+            byte[] hdrBuf = value switch {
                 // if value is 0xd0, there's no serial no. included
                 // in the response
-                case 0xd0:
-                    hdrBuf = ReceiveBytes(8);
-                    break;
+                0xd0 => ReceiveBytes(8),
                 // if value is 0xd4, there's a serial no. included
                 // in the response
-                case 0xd4:
-                    hdrBuf = ReceiveBytes(12);
-                    break;
+                0xd4 => ReceiveBytes(12),
                 // in the case where we receive some other data, we mark it
                 // as invalid and throw an `Exception`
-                default:
-                    throw new InvalidDataException($"while reading respoonse header: invalid start byte received: {value}");
-            }
+                _ => throw new InvalidDataException($"while reading respoonse header: invalid start byte received: {value}"),
+            };
 
             // calculate the response data length
-            int dataSize = hdrBuf[^1] << 8 | hdrBuf[^2];
+            int dataSize = hdrBuf[hdrBuf.Length - 1] << 8 | hdrBuf[hdrBuf.Length - 2];
             List<byte> responseBuffer = ReceiveBytes(dataSize).ToList();
 
             // if the encode isn't `0` then we know that we hit an error.
@@ -169,7 +163,8 @@ namespace SLMP {
                 (byte)(cnt & 0xff), (byte)(cnt >> 0x8),
             });
 
-            _stream!.Write(rawRequest.ToArray());
+            var buf = rawRequest.ToArray();
+            _stream!.Write(buf, 0, buf.Length);
         }
 
         /// <summary>
@@ -203,7 +198,8 @@ namespace SLMP {
             });
             rawRequest.AddRange(data);
 
-            _stream!.Write(rawRequest.ToArray());
+            var buf = rawRequest.ToArray();
+            _stream!.Write(buf, 0, buf.Length);
         }
 
         /// <summary>
@@ -228,7 +224,8 @@ namespace SLMP {
                 0xde, 0xad, 0xbe, 0xef
             });
 
-            _stream!.Write(rawRequest.ToArray());
+            var buf = rawRequest.ToArray();
+            _stream!.Write(buf, 0, buf.Length);
         }
     }
 }

@@ -51,11 +51,10 @@ namespace SLMP {
             if (count % 2 != 0)
                 listData.Add(false);
 
-            listData
-                .Chunk(2)
-                .ToList()
-                .ForEach(a => encodedData.Add(
-                    (byte)(Convert.ToByte(a[0]) << 4 | Convert.ToByte(a[1]))));
+            for (int i=0; i<count; i+=2) {
+                var value = (byte)(Convert.ToByte(listData[i]) << 4 | Convert.ToByte(listData[i + 1]));
+                encodedData.Add(value);
+            }
 
             SendWriteDeviceCommand(device, addr, count, encodedData.ToArray());
             ReceiveResponse();
@@ -138,10 +137,14 @@ namespace SLMP {
             text += new string('\0', 2 - (text.Length % 2));
             List<ushort> result = new();
 
-            System.Text.Encoding.ASCII.GetBytes(text.ToCharArray())
-                .Chunk(2)
-                .ToList()
-                .ForEach(a => result.Add((ushort)(a[1] << 8 | a[0])));
+            var array = text.ToCharArray();
+            if (array.Length % 2 != 0)
+                throw new Exception("Unexpected");
+
+            for (int i=0; i<array.Length; i+=2) {
+                var value = (ushort)(array[i + 1] << 8 | array[i]);
+                result.Add(value);
+            }
 
             WriteWordDevice(device, addr, result.ToArray());
         }
